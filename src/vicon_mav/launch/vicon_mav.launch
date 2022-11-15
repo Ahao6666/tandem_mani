@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+   <node pkg="vicon_mav" type="vicon_px4" name="vicon_px4" output="screen">
+
+   </node>
+</launch>
