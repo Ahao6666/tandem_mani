@@ -156,7 +156,7 @@ bool Joint::kpkvCallback(tandem_control::kpkv_msgRequest& request, tandem_contro
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "two_joints_controller");
+    ros::init(argc, argv, "tandem_manipulator_controller");
     ros::NodeHandle nh;
 	ros::Duration half_sec(0.5);
 
@@ -179,18 +179,16 @@ int main(int argc, char **argv) {
 
 	double dt = 0.01; // sample time for the controller
 
-	// instantiate 5 joint instances
+	// instantiate 4 joint instances
 	Joint joint1(nh, "joint1", dt);
 	Joint joint2(nh, "joint2", dt);
 	Joint joint3(nh, "joint3", dt);
 	Joint joint4(nh, "joint4", dt);
-	Joint joint5(nh, "joint5", dt);
 
 	joint1.kpkvSetting(50, 15);
 	joint2.kpkvSetting(50, 15);
 	joint3.kpkvSetting(30, 9);
 	joint4.kpkvSetting(30, 9);
-	joint5.kpkvSetting(30, 9);
 
 	ros::Rate rate_timer(1 / dt);
 	while(ros::ok()) {
@@ -199,14 +197,12 @@ int main(int argc, char **argv) {
 		joint2.getJointState();
 		joint3.getJointState();
 		joint4.getJointState();
-		joint5.getJointState();
 
 		// calculate the torque for each joint and publish them
 		joint1.jointTrqControl();
 		joint2.jointTrqControl();
 		joint3.jointTrqControl();
 		joint4.jointTrqControl();
-		joint5.jointTrqControl();
 
 		ros::spinOnce(); // update pos_cmd, kpkv
 		rate_timer.sleep(); // sleep the sample time

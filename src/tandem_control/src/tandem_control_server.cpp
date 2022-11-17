@@ -1,5 +1,5 @@
 // trajectory action server for the gripper robot
-// similar to example_trajectory_action_server, except there are six joints here
+// similar to example_server, except there are six joints here
 // the class "TrajectoryActionServer" here supports unlimited joints
 
 // only position in the trajectory_msgs is used
@@ -39,10 +39,10 @@ private:
 
 TrajectoryActionServer::TrajectoryActionServer(ros::NodeHandle* nodehandle):
 	nh_(*nodehandle), // dereference the pointer and pass the value
-	as_(nh_, "gripper_robot_trajectory_action", boost::bind(&TrajectoryActionServer::executeCB, this, _1), false)
+	as_(nh_, "tandem_control", boost::bind(&TrajectoryActionServer::executeCB, this, _1), false)
 {
 	ROS_INFO("in constructor of TrajectoryActionServer...");
-	as_.start(); // start the "gripper_robot_trajectory_action_server"
+	as_.start(); // start the "tandem_control_server"
 }
 
 // publish commands to all joint command topic
@@ -164,7 +164,7 @@ void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<tande
 
 //the main program instantiates a TrajectoryActionServer, then lets the callbacks do all the work
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "gripper_robot_trajectory_action_server_node");
+	ros::init(argc, argv, "tandem_control_server_node");
 	ros::NodeHandle nh;	// to be passed in the instantiation of class
 
 	ROS_INFO("instantiating an object of class TrajectoryActionServer...");

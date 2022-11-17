@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(tandem_mani_1)
+project(tandem_mani)
 
 find_package(catkin REQUIRED)
 

@@ -133,27 +133,27 @@ include_directories(
 
 ## Declare a C++ executable
 # add_executable(tandem_control_node src/tandem_control_node.cpp)
-add_executable(gripper_robot_controller src/gripper_robot_controller.cpp)
-add_executable(gripper_robot_kpkv_serviceClient src/kpkv_serviceClient.cpp)
-add_executable(gripper_robot_trajectory_action_server src/gripper_robot_trajectory_action_server.cpp)
-add_executable(gripper_robot_trajectory_action_client src/gripper_robot_trajectory_action_client.cpp)
+add_executable(tandem_control_controller src/tandem_control_controller.cpp)
+add_executable(tandem_control_kpkv_serviceClient src/kpkv_serviceClient.cpp)
+add_executable(tandem_control_server src/tandem_control_server.cpp)
+add_executable(tandem_control_client src/tandem_control_client.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(tandem_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(gripper_robot_controller tandem_control_gencpp)
-add_dependencies(gripper_robot_kpkv_serviceClient tandem_control_gencpp)
-add_dependencies(gripper_robot_trajectory_action_server tandem_control_gencpp)
-add_dependencies(gripper_robot_trajectory_action_client tandem_control_gencpp)
+add_dependencies(tandem_control_controller tandem_control_gencpp)
+add_dependencies(tandem_control_kpkv_serviceClient tandem_control_gencpp)
+add_dependencies(tandem_control_server tandem_control_gencpp)
+add_dependencies(tandem_control_client tandem_control_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tandem_control_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(gripper_robot_controller ${catkin_LIBRARIES})
-target_link_libraries(gripper_robot_kpkv_serviceClient ${catkin_LIBRARIES})
-target_link_libraries(gripper_robot_trajectory_action_server ${catkin_LIBRARIES})
-target_link_libraries(gripper_robot_trajectory_action_client ${catkin_LIBRARIES})
+target_link_libraries(tandem_control_controller ${catkin_LIBRARIES})
+target_link_libraries(tandem_control_kpkv_serviceClient ${catkin_LIBRARIES})
+target_link_libraries(tandem_control_server ${catkin_LIBRARIES})
+target_link_libraries(tandem_control_client ${catkin_LIBRARIES})
 
 #############
 ## Install ##
