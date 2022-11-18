@@ -67,23 +67,17 @@ int main(int argc, char** argv) {
 
 	// parameters for flow control, time assignment
 	double dt_sample = 1.0; // really coarse, let action server to interpolate
-	int time_1 = 5; // time for task 1, move to safe, integer to be divided by dt_sample
-	int time_2 = 5; // task 2, move to beer top
+	int time_1 = 3; // time for task 1, move to safe, integer to be divided by dt_sample
+	int time_2 = 3; // task 2, move to beer top
 	int time_3 = 3; // task 3, move to around beer
-	int time_4 = 2; // task 4, clamp the gripper
+	int time_4 = 3; // task 4, clamp the gripper
 	double time_delay = 1.0; // delay between every task
-	double lift_height = 0.3; // height to lift the beer up
 	std::vector<double> start_jnts; // start joints for each move task
 	std::vector<double> end_jnts; // end joints for each move task
 	double fraction_of_range;
 	bool finish_before_timeout;
 	start_jnts.resize(4);
 	end_jnts.resize(4);
-	// double beer_height = 0.23; // the height of the beer
-	double beer_height = 0.28; // 0.23 is real height, use 0.30 to lift the grasp point up a little
-	double table_height = 1.0; // the height of the table
-	double gripper_open = 0.24; // distance of two paddles when gripper is open
-	double gripper_close = 0.08; // distance of two paddles when grasping the beer
 
 	///////////////////////////////////////
 	// 1.move the gripper to the safe point
@@ -127,7 +121,7 @@ int main(int argc, char** argv) {
 	// send out the goal
 	action_client.sendGoal(goal, &doneCb);
 	// wait for expected duration plus some tolerance (2 seconds)
-	finish_before_timeout = action_client.waitForResult(ros::Duration(time_1 + 12.0));
+	finish_before_timeout = action_client.waitForResult(ros::Duration(time_1 + 2.0));
 	if (!finish_before_timeout) {
 		ROS_WARN("task 1 is not done. (timeout)");
 		return 0;

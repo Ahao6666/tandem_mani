@@ -20,7 +20,7 @@
     name="base_link">
     <inertial>
       <origin
-        xyz="-0.00012418 -0.015731 3.7732E-05"
+        xyz="-0.00012418 -0.015731 0"
         rpy="0 0 0" />
       <mass
         value="0.2" />
@@ -57,7 +57,7 @@
     name="link1">
     <inertial>
       <origin
-        xyz="0.00012086 -0.040968 -0.00053257"
+        xyz="0.00012086 -0.040968 0"
         rpy="0 0 0" />
       <mass
         value="0.2" />
@@ -94,7 +94,7 @@
     name="joint1"
     type="revolute">
     <origin
-      xyz="-0.00015771 -0.0416 6.4042E-05"
+      xyz="-0.00015771 -0.0416 0"
       rpy="0 0 0" />
     <parent
       link="base_link" />

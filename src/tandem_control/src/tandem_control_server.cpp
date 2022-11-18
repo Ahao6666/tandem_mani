@@ -13,8 +13,8 @@
 #include <string>
 
 // interpolation parameters
-const double dt = 0.005; // resolution for interpolating the trajectory
-const double dt_min = 0.0000001; // for examining the time step
+const double dt = 0.1; // resolution for interpolating the trajectory
+const double dt_min = 0.00001; // for examining the time step
 
 // there is one pos_cmd publisher for each joint in this class
 class TrajectoryActionServer {

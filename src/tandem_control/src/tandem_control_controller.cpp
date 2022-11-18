@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 	}
 	ROS_INFO("/gazebo/get_joint_properties service exists");
 
-	double dt = 0.01; // sample time for the controller
+	double dt = 0.1; // sample time for the controller
 
 	// instantiate 4 joint instances
 	Joint joint1(nh, "joint1", dt);
