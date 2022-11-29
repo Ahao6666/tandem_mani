@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 	// assign the start joints and end joints
 	start_jnts = origin_jnts; // start with last joints
 	end_jnts[0] = M_PI/2; // joint1, at its origin
-	end_jnts[1] = 0; // joint2, a little bit forward
+	end_jnts[1] = -M_PI/3; // joint2, a little bit forward
 	end_jnts[2] = 0; // joint3, a little bit forward
 	end_jnts[3] = 0; // joint4, parallel to the ground
 
@@ -191,10 +191,10 @@ int main(int argc, char** argv) {
 		origin_jnts[i] = get_joint_state_srv_msg.response.position[0];
 	}
 	start_jnts = origin_jnts;
-	end_jnts[0] = 0; // joint1, at its origin
-	end_jnts[1] = M_PI/2; // joint2, a little bit forward
-	end_jnts[2] = 0; // joint3, a little bit forward
-	end_jnts[3] = 0; // joint4, parallel to the ground
+	end_jnts[0] = -M_PI/6; // joint1, at its origin
+	end_jnts[1] = -M_PI/2; // joint2, a little bit forward
+	end_jnts[2] = M_PI/2; // joint3, a little bit forward
+	end_jnts[3] = M_PI/2; // joint4, parallel to the ground
 	// prepare the goal message
 	trajectory.points.clear();
 	for (int i=0; i<time_3+1; i++) { // there are time_3+1 points, including start and end
@@ -235,9 +235,9 @@ int main(int argc, char** argv) {
 	}
 	start_jnts = origin_jnts;
 	end_jnts[0] = 0; // joint1, at its origin
-	end_jnts[1] = -M_PI/2; // joint2, a little bit forward
-	end_jnts[2] = M_PI/2; // joint3, a little bit forward
-	end_jnts[3] = -M_PI/2; // joint4, parallel to the ground
+	end_jnts[1] = 0; // joint2, a little bit forward
+	end_jnts[2] = 0; // joint3, a little bit forward
+	end_jnts[3] = 0; // joint4, parallel to the ground
 	// prepare the goal message
 	trajectory.points.clear();
 	for (int i=0; i<time_4+1; i++) { // there are time_4+1 points, including start and end
