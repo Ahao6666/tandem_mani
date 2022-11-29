@@ -43,15 +43,6 @@
           rgba="1 1 1 1" />
       </material>
     </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://tandem_mani/meshes/base_link.STL" />
-      </geometry>
-    </collision>
   </link>
   <link
     name="link1">
@@ -80,15 +71,6 @@
           rgba="1 1 1 1" />
       </material>
     </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://tandem_mani/meshes/link1.STL" />
-      </geometry>
-    </collision>
   </link>
   <joint
     name="joint1"
@@ -135,15 +117,6 @@
           rgba="1 1 1 1" />
       </material>
     </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://tandem_mani/meshes/link2.STL" />
-      </geometry>
-    </collision>
   </link>
   <joint
     name="joint2"
@@ -190,15 +163,6 @@
           rgba="1 1 1 1" />
       </material>
     </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://tandem_mani/meshes/link3.STL" />
-      </geometry>
-    </collision>
   </link>
   <joint
     name="joint3"
@@ -245,15 +209,6 @@
           rgba="1 1 1 1" />
       </material>
     </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://tandem_mani/meshes/link4.STL" />
-      </geometry>
-    </collision>
   </link>
   <joint
     name="joint4"
