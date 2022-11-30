@@ -20,17 +20,14 @@
     name="base_link">
     <inertial>
       <origin
-        xyz="-0.00012418 -0.015731 3.7732E-05"
+        xyz="-0.00012418 -0.015731 0"
         rpy="0 0 0" />
       <mass
-        value="0.14451" />
+        value="0.2" />
       <inertia
-        ixx="7.7079E-05"
-        ixy="3.1357E-08"
-        ixz="1.3877E-08"
-        iyy="0.00013443"
-        iyz="2.3591E-08"
-        izz="7.6836E-05" />
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
     </inertial>
     <visual>
       <origin
@@ -52,7 +49,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/base_link.STL" />
+          filename="package://tandem_mani/meshes/base_link_no_collision.STL" />
       </geometry>
     </collision>
   </link>
@@ -63,14 +60,11 @@
         xyz="-1.671E-05 -0.040968 -0.00054586"
         rpy="0 0 0" />
       <mass
-        value="0.11786" />
+        value="0.2" />
       <inertia
-        ixx="6.056E-05"
-        ixy="-1.5829E-07"
-        ixz="-1.1489E-07"
-        iyy="4.9936E-05"
-        iyz="-3.3143E-06"
-        izz="6.8007E-05" />
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
     </inertial>
     <visual>
       <origin
@@ -92,7 +86,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link1.STL" />
+          filename="package://tandem_mani/meshes/link1_no_collision.STL" />
       </geometry>
     </collision>
   </link>
@@ -100,7 +94,7 @@
     name="joint1"
     type="revolute">
     <origin
-      xyz="-0.00015771 -0.0416 6.4042E-05"
+      xyz="-0.00015771 -0.0416 0"
       rpy="0 0 0" />
     <parent
       link="base_link" />
@@ -121,14 +115,11 @@
         xyz="-0.057534 3.7398E-05 0.028177"
         rpy="0 0 0" />
       <mass
-        value="0.086527" />
+        value="0.2" />
       <inertia
-        ixx="3.7771E-05"
-        ixy="6.0862E-08"
-        ixz="8.3768E-07"
-        iyy="4.1278E-05"
-        iyz="-2.3986E-07"
-        izz="3.1627E-05" />
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
     </inertial>
     <visual>
       <origin
@@ -150,7 +141,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link2.STL" />
+          filename="package://tandem_mani/meshes/link2_no_collision.STL" />
       </geometry>
     </collision>
   </link>
@@ -179,14 +170,11 @@
         xyz="-0.080231 -3.4126E-05 -0.00028762"
         rpy="0 0 0" />
       <mass
-        value="0.1099" />
+        value="0.2" />
       <inertia
-        ixx="3.2676E-05"
-        ixy="-1.9085E-07"
-        ixz="-4.9253E-06"
-        iyy="0.00010026"
-        iyz="-8.1706E-08"
-        izz="0.00010489" />
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
     </inertial>
     <visual>
       <origin
@@ -208,7 +196,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link3.STL" />
+          filename="package://tandem_mani/meshes/link3_no_collision.STL" />
       </geometry>
     </collision>
   </link>
@@ -237,14 +225,11 @@
         xyz="-0.12453 -2.9587E-05 0.028547"
         rpy="0 0 0" />
       <mass
-        value="0.12676" />
+        value="0.2" />
       <inertia
-        ixx="2.2633E-05"
-        ixy="-2.8649E-07"
-        ixz="-1.8437E-06"
-        iyy="0.00024005"
-        iyz="-1.7908E-08"
-        izz="0.00025741" />
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
     </inertial>
     <visual>
       <origin
@@ -266,7 +251,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link4.STL" />
+          filename="package://tandem_mani/meshes/link4_no_collision.STL" />
       </geometry>
     </collision>
   </link>
