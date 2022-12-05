@@ -1,18 +1,22 @@
-// revision from "two_DOF_controller" in ps4_yxl1450:
-	// kpkv service server has been relocated inside the class
-// this class "Joint" is now capable of supporting as many joints as possible
+/******************************************************************************
+ * Copyright (c) 2022-2024 The IUSL_UAV Shen Jiahao. All rights reserved.
+ * See the AUTHORS file for names of contributors.
+ *****************************************************************************/
 
+/******************************************************************************
+ * @file tandem_control_controller
+ * @author Shen Jiahao <shenjiahao@westlake.edu.cn>
+ *****************************************************************************/
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 #include <math.h>
 #include <string>
-// important messages
 #include <gazebo_msgs/ApplyJointEffort.h>
 #include <gazebo_msgs/GetJointProperties.h>
 #include <sensor_msgs/JointState.h>
 #include <tandem_control/kpkv_msg.h>
 
-// define class to instantiate two joints
+// define class to instantiate joints
 class Joint {
 public:
 	Joint(ros::NodeHandle nh, std::string joint_name, double dt); // constructor

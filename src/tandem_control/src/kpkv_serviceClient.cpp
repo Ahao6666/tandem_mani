@@ -1,13 +1,19 @@
-// service client to change kp&kv for both joints in the controller
-// this service is a little bit different than in ps4_yxl1450
-	// in ps4_yxl1450, kpkv have been changed for two joints in one service
-	// in here, there are one service for each joints
+/******************************************************************************
+ * Copyright (c) 2022-2024 The IUSL_UAV Shen Jiahao. All rights reserved.
+ * See the AUTHORS file for names of contributors.
+ *****************************************************************************/
+
+/******************************************************************************
+ * @file kpkv_serviceClient
+ * @author Shen Jiahao <shenjiahao@westlake.edu.cn>
+ *****************************************************************************/
 
 #include <ros/ros.h>
 #include <tandem_control/kpkv_msg.h>
 #include <string>
 #include <iostream>
 
+//	set the Kp and Kd parameters for the joint controller
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "kpkv_serviceClient");
 	ros::NodeHandle nh;

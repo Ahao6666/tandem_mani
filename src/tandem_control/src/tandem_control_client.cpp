@@ -1,12 +1,13 @@
-// trajectory action client for the gripper robot
-// this node demonstrate how to pick up a beer and place it with a robot gripper
-// this movement has been decomposed below: (in gazebo there is a table with a beer)
-	// 1.move the gripper to the safe point
-		// (get current joint positions of the gripper robot from gazebo)
-	// 2.move the gripper to the top area of the beer
-		// (get the position of the beer from gazebo)
-	// 3.move the gripper around the beer
-	// 4.clamp the gripper to grasp the beer
+/******************************************************************************
+ * Copyright (c) 2022-2024 The IUSL_UAV Shen Jiahao. All rights reserved.
+ * See the AUTHORS file for names of contributors.
+ *****************************************************************************/
+
+/******************************************************************************
+ * @file tandem_control_client
+ * @author Shen Jiahao <shenjiahao@westlake.edu.cn>
+ *****************************************************************************/
+
 
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
@@ -25,6 +26,7 @@ void doneCb(const actionlib::SimpleClientGoalState& state,
 	ROS_INFO("doneCb: server responded with state [%s]", state.toString().c_str());
 }
 
+// trajectory action client for the gripper robot
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "tandem_control_client_node");
 	ros::NodeHandle nh;
@@ -67,10 +69,10 @@ int main(int argc, char** argv) {
 
 	// parameters for flow control, time assignment
 	double dt_sample = 1.0; // really coarse, let action server to interpolate
-	int time_1 = 3; // time for task 1, move to safe, integer to be divided by dt_sample
-	int time_2 = 3; // task 2, move to beer top
-	int time_3 = 3; // task 3, move to around beer
-	int time_4 = 3; // task 4, clamp the gripper
+	int time_1 = 3; // time for task 1
+	int time_2 = 3; // time for task 2
+	int time_3 = 3; // time for task 3
+	int time_4 = 3; // time for task 4
 	double time_delay = 1.0; // delay between every task
 	std::vector<double> start_jnts; // start joints for each move task
 	std::vector<double> end_jnts; // end joints for each move task
@@ -80,10 +82,10 @@ int main(int argc, char** argv) {
 	end_jnts.resize(4);
 
 	///////////////////////////////////////
-	// 1.move the gripper to the safe point
+	// task 1.move to the first position.
 	///////////////////////////////////////
 
-	ROS_INFO("task 1: move the gripper to the safe point.");
+	ROS_INFO("task 1.move to the first position.");
 
 	// get the original joint positions when this node is invoked
 	std::vector<double> origin_jnts;
@@ -99,10 +101,10 @@ int main(int argc, char** argv) {
 	// define the safe point, avoid singularity at origin
 	std::vector<double> safe_jnts;
 	safe_jnts.resize(4);
-	safe_jnts[0] = 0; // joint1, at its origin
-	safe_jnts[1] = 0; // joint2, a little bit forward
-	safe_jnts[2] = 0; // joint3, a little bit forward
-	safe_jnts[3] = 0; // joint4, parallel to the ground
+	safe_jnts[0] = -M_PI/2; // joint1, 
+	safe_jnts[1] = -M_PI/2; // joint2, 
+	safe_jnts[2] = -M_PI/2; // joint3, 
+	safe_jnts[3] = -M_PI/2; // joint4, 
 	// assign the safe joints to end joints
 	end_jnts = safe_jnts;
 
@@ -133,10 +135,10 @@ int main(int argc, char** argv) {
 	ros::Duration(time_delay).sleep(); // delay before jumping to next task
 
 	/////////////////////////////////////////////////
-	// 2.move the gripper to the top area of the beer
+	// 2.move to the second position.
 	/////////////////////////////////////////////////
 
-	ROS_INFO("task 2: move the gripper to the top area of the beer.");
+	ROS_INFO("task 2.move to the second position.");
 
 	origin_jnts.resize(4);
 	for (int i=0; i<4; i++) {
@@ -147,10 +149,10 @@ int main(int argc, char** argv) {
 
 	// assign the start joints and end joints
 	start_jnts = origin_jnts; // start with last joints
-	end_jnts[0] = M_PI/2; // joint1, at its origin
-	end_jnts[1] = -M_PI/3; // joint2, a little bit forward
-	end_jnts[2] = 0; // joint3, a little bit forward
-	end_jnts[3] = 0; // joint4, parallel to the ground
+	end_jnts[0] = M_PI/2; 	// joint1, 
+	end_jnts[1] = -M_PI/3; 	// joint2, 
+	end_jnts[2] = 0; 		// joint3, 
+	end_jnts[3] = 0; 		// joint4, 
 
 	// prepare the goal message
 	trajectory.points.clear();
@@ -179,10 +181,10 @@ int main(int argc, char** argv) {
 	ros::Duration(time_delay).sleep(); // delay before jumping to next task
 
 	/////////////////////////////////////
-	// 3.move the gripper around the beer
+	// 3.move to the third position.
 	/////////////////////////////////////
 
-	ROS_INFO("task 3: move the gripper around the beer.");
+	ROS_INFO("task 3.move to the third position.");
 
 	origin_jnts.resize(4);
 	for (int i=0; i<4; i++) {
@@ -191,10 +193,10 @@ int main(int argc, char** argv) {
 		origin_jnts[i] = get_joint_state_srv_msg.response.position[0];
 	}
 	start_jnts = origin_jnts;
-	end_jnts[0] = -M_PI/6; // joint1, at its origin
-	end_jnts[1] = -M_PI/2; // joint2, a little bit forward
-	end_jnts[2] = M_PI/2; // joint3, a little bit forward
-	end_jnts[3] = M_PI/2; // joint4, parallel to the ground
+	end_jnts[0] = -M_PI/6; 	// joint1, 
+	end_jnts[1] = -M_PI/2; 	// joint2, 
+	end_jnts[2] = M_PI/2; 	// joint3, 
+	end_jnts[3] = M_PI/2; 	// joint4, 
 	// prepare the goal message
 	trajectory.points.clear();
 	for (int i=0; i<time_3+1; i++) { // there are time_3+1 points, including start and end
@@ -222,10 +224,10 @@ int main(int argc, char** argv) {
 	ros::Duration(time_delay).sleep(); // delay before jumping to next task
 
 	////////////////////////////////////////
-	// 4.clamp the gripper to grasp the beer
+	// 4.return to the initial position.
 	////////////////////////////////////////
 
-	ROS_INFO("task 4: clamp the gripper to grasp the beer.");
+	ROS_INFO("task 4.return to the initial position.");
 
 	origin_jnts.resize(4);
 	for (int i=0; i<4; i++) {
@@ -235,9 +237,9 @@ int main(int argc, char** argv) {
 	}
 	start_jnts = origin_jnts;
 	end_jnts[0] = 0; // joint1, at its origin
-	end_jnts[1] = 0; // joint2, a little bit forward
-	end_jnts[2] = 0; // joint3, a little bit forward
-	end_jnts[3] = 0; // joint4, parallel to the ground
+	end_jnts[1] = 0; // joint2, at its origin
+	end_jnts[2] = 0; // joint3, at its origin
+	end_jnts[3] = 0; // joint4, at its origin
 	// prepare the goal message
 	trajectory.points.clear();
 	for (int i=0; i<time_4+1; i++) { // there are time_4+1 points, including start and end

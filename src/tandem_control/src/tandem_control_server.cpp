@@ -1,10 +1,12 @@
-// trajectory action server for the gripper robot
-// similar to example_server, except there are six joints here
-// the class "TrajectoryActionServer" here supports unlimited joints
+/******************************************************************************
+ * Copyright (c) 2022-2024 The IUSL_UAV Shen Jiahao. All rights reserved.
+ * See the AUTHORS file for names of contributors.
+ *****************************************************************************/
 
-// only position in the trajectory_msgs is used
-	// because our controller only accept position command for control
-
+/******************************************************************************
+ * @file tandem_control_server
+ * @author Shen Jiahao <shenjiahao@westlake.edu.cn>
+ *****************************************************************************/
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
 #include <tandem_control/trajAction.h>
@@ -34,7 +36,6 @@ private:
 	tandem_control::trajActionGoal goal_; // goal message
 	tandem_control::trajActionResult result_; // result message
 	tandem_control::trajActionFeedback feedback_; // feedback message, not used
-
 };
 
 TrajectoryActionServer::TrajectoryActionServer(ros::NodeHandle* nodehandle):
@@ -80,15 +81,15 @@ void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<tande
 	std::vector<double> prev_jnts; // previous joints in the interpolation
 	std::vector<double> next_jnts; // next joints in the interpolation
 	std::vector<double> cmd_jnts; // interpolated joints to be published
-	prev_jnts.resize(njnts); // resize to the number of joints
+	prev_jnts.resize(njnts); 	// resize to the number of joints
 	next_jnts.resize(njnts);
 	cmd_jnts.resize(njnts);
 
 	// time control parameters
-		// final time to finish these points
+	// final time to finish these points
 	double t_final = trajectory.points[npts - 1].time_from_start.toSec();
-		// the first point should be the current point in the gazebo
-		// so the first time_from_start should be 0.0
+	// the first point should be the current point in the gazebo
+	// so the first time_from_start should be 0.0
 	double t_previous = trajectory.points[0].time_from_start.toSec();
 	double t_next = trajectory.points[1].time_from_start.toSec();
 	double t_stream = t_previous; // initializee to t_previous
@@ -113,9 +114,9 @@ void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<tande
 	while (t_stream < t_final) { // check if current time exceeds final time
 		if (t_stream > t_next) { // time to change segment of points
 			// an improvement here: supporting interpolation on combined segments
-				// because it's possible the time resolution is higher than that in this interpolation
-				// after jumping to next segment, if t_stream > t_next
-				// only t_next and next_jnts will continue jumping, making this segment bigger
+			// because it's possible the time resolution is higher than that in this interpolation
+			// after jumping to next segment, if t_stream > t_next
+			// only t_next and next_jnts will continue jumping, making this segment bigger
 			ipt_next = ipt_next + 1; // index next point
 			// refresh time stamp
 			t_previous = t_next;
@@ -148,7 +149,7 @@ void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<tande
 		send_joint_commands_(cmd_jnts); // send these joint position to controller
 		// for debug of these calculation, may comment out later
 		// ROS_INFO("prev_jnts[2], next_jnts[2], cmd_jnts[2]: %f, %f, %f",
-		// 	prev_jnts[2], next_jnts[2], cmd_jnts[2]);
+		// prev_jnts[2], next_jnts[2], cmd_jnts[2]);
 
 		// time control
 		rate_timer.sleep();
