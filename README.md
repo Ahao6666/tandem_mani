@@ -1,4 +1,5 @@
 # minimal_robot_gripper
+## run with actionlib tools
  - `catkin build` for make
 
 To get program running, first compile it using catkin_make in your ros workspace. Then running these scripts in seperate terminals:
@@ -20,3 +21,16 @@ To get program running, first compile it using catkin_make in your ros workspace
 
 or you can run `.start.sh` directly
 
+# run with ros_control tools
+
+Gazebo:
+
+  - `roslaunch tandem_mani gazebo.launch`
+
+ROS Control:
+
+  - `roslaunch tandem_control tandem_control.launch`
+
+Example of Moving Joints:
+
+  - `rostopic pub /tandem_control/joint2_position_controller/command std_msgs/Float64 "data: -0.9"`
