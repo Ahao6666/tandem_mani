@@ -128,7 +128,7 @@ void Joint::jointTrqControl() {
 	// watch for periodicity
 	if (pos_err > M_PI)
 		pos_err = pos_err - 2 * M_PI;
-	if (pos_err > M_PI)
+	if (pos_err < -M_PI)
 		pos_err = pos_err + 2 * M_PI;
 	// control algorithm in one line
 	trq_cmd  = kp * pos_err - kv * vel_cur;
