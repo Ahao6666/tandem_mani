@@ -273,4 +273,62 @@
       effort="100"
       velocity="100" />
   </joint>
+  <link
+    name="link5">
+    <inertial>
+      <origin
+        xyz="1.11022302462516E-16 0.0362370967062206 -0.0307000030338756"
+        rpy="0 0 0" />
+      <mass
+        value="0.038763224507172" />
+      <inertia
+        ixx="3.08628067652554E-05"
+        ixy="-8.36133408914895E-21"
+        ixz="2.17053024608487E-12"
+        iyy="1.67758256869425E-05"
+        iyz="-1.84232894725228E-20"
+        izz="2.12513688580939E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://tandem_mani/meshes/link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://tandem_mani/meshes/link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint5"
+    type="revolute">
+    <origin
+      xyz="-0.157 0 0.0587"
+      rpy="0 0 0" />
+    <parent
+      link="link4" />
+    <child
+      link="link5" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
 </robot>
