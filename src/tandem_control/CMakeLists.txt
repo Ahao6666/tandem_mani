@@ -137,6 +137,7 @@ add_executable(tandem_control_controller src/tandem_control_controller.cpp)
 add_executable(tandem_control_kpkv_serviceClient src/kpkv_serviceClient.cpp)
 add_executable(tandem_control_server src/tandem_control_server.cpp)
 add_executable(tandem_control_client src/tandem_control_client.cpp)
+add_executable(floating_platform src/floating_platform.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -145,6 +146,7 @@ add_dependencies(tandem_control_controller tandem_control_gencpp)
 add_dependencies(tandem_control_kpkv_serviceClient tandem_control_gencpp)
 add_dependencies(tandem_control_server tandem_control_gencpp)
 add_dependencies(tandem_control_client tandem_control_gencpp)
+add_dependencies(floating_platform tandem_control_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tandem_control_node
@@ -154,6 +156,7 @@ target_link_libraries(tandem_control_controller ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_kpkv_serviceClient ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_server ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_client ${catkin_LIBRARIES})
+target_link_libraries(floating_platform ${catkin_LIBRARIES})
 
 #############
 ## Install ##

@@ -6,9 +6,8 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
-                "/home/ji/tandem_mani/devel/include/**",
-                "/opt/ros/noetic/include/**",
-                "/home/ji/tandem_mani/src/vicon_mav/include/**",
+                "/home/ahao/tandem_mani/devel/include/**",
+                "/opt/ros/melodic/include/**",
                 "/usr/include/**",
                 "${workspaceFolder}/devel/.private/tandem_control/include"
             ],

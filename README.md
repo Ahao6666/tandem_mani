@@ -10,6 +10,6 @@ To get program running, first compile it using catkin_make in your ros workspace
   - `rosrun tandem_control tandem_control_server`  
   - `rosrun tandem_control tandem_control_client`  
 
-
 or you can run `.start.sh` or `roslaunch start.launch` directly
 
+  - `rosrun tandem_control floating_platform` to move the platform  
