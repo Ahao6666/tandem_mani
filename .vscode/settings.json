@@ -56,7 +56,16 @@
         "cfenv": "cpp",
         "cinttypes": "cpp",
         "typeindex": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "unordered_set": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "future": "cpp",
+        "mutex": "cpp"
     },
     "python.autoComplete.extraPaths": [
         "/home/ahao/tandem_mani/devel/lib/python2.7/dist-packages",
