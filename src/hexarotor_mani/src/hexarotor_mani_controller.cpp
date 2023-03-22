@@ -179,9 +179,9 @@ int main(int argc, char **argv) {
 
 	joint1.kpkvSetting(50, 15);
 	joint2.kpkvSetting(50, 15);
-	joint3.kpkvSetting(30, 10);
-	joint4.kpkvSetting(30, 10);
-	joint5.kpkvSetting(30, 10);
+	joint3.kpkvSetting(50, 10);
+	joint4.kpkvSetting(50, 10);
+	joint5.kpkvSetting(50, 10);
 
 
 	ros::Rate rate_timer(1 / dt);
