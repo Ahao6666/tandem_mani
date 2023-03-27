@@ -21,8 +21,8 @@ public:
 	Joint(ros::NodeHandle nh, std::string joint_name, double dt); // constructor
 	~Joint() {}; // destructor
 	void getJointState();
-	void jointTrqControl();
-	void kpkvSetting(double kp, double kv);
+	void jointTrqControl(double dt);
+	void paramSetting(double kp, double kv);
 private:
 	// callback for the pos_cmd subscriber
 	void posCmdCB(const std_msgs::Float64& pos_cmd_msg);
@@ -44,8 +44,6 @@ private:
 	std_msgs::Float64 pos_msg; // position
 	std_msgs::Float64 vel_msg; // velocity
 	std_msgs::Float64 trq_msg; // torque
-	// kpkv service server
-	ros::ServiceServer kpkv_server;
 
 	// control parameters
 	double pos_cur; // current joint position
@@ -120,7 +118,7 @@ void Joint::getJointState() {
 }
 
 // calculate joint torque, publish them, send to gazebo
-void Joint::jointTrqControl() {
+void Joint::jointTrqControl(double dt) {
 	pos_err = pos_cmd - pos_cur;
 	// watch for periodicity
 	if (pos_err > M_PI)
@@ -141,7 +139,7 @@ void Joint::jointTrqControl() {
 		ROS_WARN("service call to apply_joint_effort failed!");
 }
 
-void Joint::kpkvSetting(double kp, double kv) {
+void Joint::paramSetting(double kp, double kv) {
 	this -> kp = kp;
 	this -> kv = kv;
 }
@@ -168,7 +166,7 @@ int main(int argc, char **argv) {
 	}
 	ROS_INFO("/gazebo/get_joint_properties service exists");
 
-	double dt = 0.1; // sample time for the controller
+	double dt = 0.01; // sample time for the controller
 
 	// instantiate 4 joint instances
 	Joint joint1(nh, "joint1", dt);
@@ -177,14 +175,12 @@ int main(int argc, char **argv) {
 	Joint joint4(nh, "joint4", dt);
 	Joint joint5(nh, "joint5", dt);
 
-	joint1.kpkvSetting(50, 15);
-	joint2.kpkvSetting(50, 15);
-	joint3.kpkvSetting(50, 10);
-	joint4.kpkvSetting(50, 10);
-	joint5.kpkvSetting(50, 10);
+	joint1.paramSetting(20, 1.0 );
+	joint2.paramSetting(20, 0.8 );
+	joint3.paramSetting(3, 0.1 );
+	joint4.paramSetting(2, 0.05 );
+	joint5.paramSetting(0.5, 0.01 );
 
-
-	ros::Rate rate_timer(1 / dt);
 	while(ros::ok()) {
 		// get joint state(pos, vel) and publish them
 		joint1.getJointState();
@@ -194,14 +190,14 @@ int main(int argc, char **argv) {
 		joint5.getJointState();
 
 		// calculate the torque for each joint and publish them
-		joint1.jointTrqControl();
-		joint2.jointTrqControl();
-		joint3.jointTrqControl();
-		joint4.jointTrqControl();
-		joint5.jointTrqControl();
+		joint1.jointTrqControl(dt);
+		joint2.jointTrqControl(dt);
+		joint3.jointTrqControl(dt);
+		joint4.jointTrqControl(dt);
+		joint5.jointTrqControl(dt);
 
 		ros::spinOnce(); // update pos_cmd, kpkv
-		rate_timer.sleep(); // sleep the sample time
+		ros::Duration(dt).sleep();
 	}
 }
 

@@ -23,17 +23,22 @@ int main(int argc, char** argv) {
 		joint_pos_cmd_publisher_[i] = nh.advertise<std_msgs::Float64>(
 			joint_names[i] + "_pos_cmd", 1, true);
 	}
+	std::vector<double> cmd_data;
 
 	while (ros::ok()) {
-		std::vector<double> cmd_data = {1.0, 0.5, 0.1, -0.8, -0.5};
+		cmd_data.push_back(0); // joint1, 
+		cmd_data.push_back(M_PI/2); // joint2, 
+		cmd_data.push_back(0); // joint3, 
+		cmd_data.push_back(0); // joint4, 
+		cmd_data.push_back(sin(0.25 * ros::Time::now().toSec()));
 		std_msgs::Float64 cmd_msg;
 		for (int i=0; i<5; i++){
 			cmd_msg.data = cmd_data[i];
 			joint_pos_cmd_publisher_[i].publish(cmd_msg);
 		}
-
+		cmd_data.clear();
 		ros::spinOnce();
-		ros::Duration(0.1).sleep();
+		ros::Duration(0.001).sleep();
 	}
 
 	return 0;

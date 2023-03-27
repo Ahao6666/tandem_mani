@@ -49,12 +49,16 @@ include_directories(
 
 add_executable(hexarotor_mani_controller src/hexarotor_mani_controller.cpp)
 add_executable(hexarotor_mani_command src/hexarotor_mani_command.cpp)
+add_executable(hexarotor_mani_client src/hexarotor_mani_client.cpp)
+add_executable(hexarotor_mani_server src/hexarotor_mani_server.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(hexarotor_mani_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(hexarotor_mani_controller hexarotor_mani_gencpp)
 add_dependencies(hexarotor_mani_command hexarotor_mani_gencpp)
+add_dependencies(hexarotor_mani_client hexarotor_mani_gencpp)
+add_dependencies(hexarotor_mani_server hexarotor_mani_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(hexarotor_mani_node
@@ -62,3 +66,5 @@ add_dependencies(hexarotor_mani_command hexarotor_mani_gencpp)
 # )
 target_link_libraries(hexarotor_mani_controller ${catkin_LIBRARIES})
 target_link_libraries(hexarotor_mani_command ${catkin_LIBRARIES})
+target_link_libraries(hexarotor_mani_client ${catkin_LIBRARIES})
+target_link_libraries(hexarotor_mani_server ${catkin_LIBRARIES})
