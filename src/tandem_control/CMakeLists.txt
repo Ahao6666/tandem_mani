@@ -138,6 +138,7 @@ add_executable(tandem_control_kpkv_serviceClient src/kpkv_serviceClient.cpp)
 add_executable(tandem_control_server src/tandem_control_server.cpp)
 add_executable(tandem_control_client src/tandem_control_client.cpp)
 add_executable(floating_platform src/floating_platform.cpp)
+add_executable(end_point_position src/end_point_position.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -147,6 +148,7 @@ add_dependencies(tandem_control_kpkv_serviceClient tandem_control_gencpp)
 add_dependencies(tandem_control_server tandem_control_gencpp)
 add_dependencies(tandem_control_client tandem_control_gencpp)
 add_dependencies(floating_platform tandem_control_gencpp)
+add_dependencies(end_point_position tandem_control_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tandem_control_node
@@ -157,51 +159,4 @@ target_link_libraries(tandem_control_kpkv_serviceClient ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_server ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_client ${catkin_LIBRARIES})
 target_link_libraries(floating_platform ${catkin_LIBRARIES})
-
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables and/or libraries for installation
-# install(TARGETS tandem_control tandem_control_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
-
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_delta_manipulator.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+target_link_libraries(end_point_position ${catkin_LIBRARIES})

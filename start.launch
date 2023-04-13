@@ -29,5 +29,6 @@
     <node name="tandem_control_server_node" pkg="tandem_control" type="tandem_control_server" output="screen" />
     <node name="tandem_control_client_node" pkg="tandem_control" type="tandem_control_client" output="screen" />
     <node name="floating_platform_node" pkg="tandem_control" type="floating_platform" output="screen" />
+    <node name="end_point_position" pkg="tandem_control" type="end_point_position" output="screen" />
 
 </launch>
