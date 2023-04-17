@@ -43,9 +43,7 @@ int main(int argc, char** argv) {
 		objstate.request.link_state.pose.orientation.z = 0;
 
 		// Call the SetLinkState service and check for errors
-		if (client.call(objstate)) {
-			ROS_INFO("SetLinkState service call successful");
-		} else {
+		if (!client.call(objstate)) {
 			ROS_ERROR("Failed to call SetLinkState service");
 		}
 

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>my_gazebo_plugin</name>
+  <version>0.0.0</version>
+  <description>My Gazebo Plugin</description>
+  <maintainer email="you@yourdomain.tld">Your Name</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>gazebo_ros</build_depend>
+
+  <export>
+    <gazebo_plugin>my_gazebo_plugin</gazebo_plugin>
+  </export>
+</package>
