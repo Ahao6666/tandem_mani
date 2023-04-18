@@ -833,11 +833,23 @@
         </ode>
       </physics>
     </joint>
-    
+
     <static>0</static>
     <allow_auto_disable>1</allow_auto_disable>
-    <plugin name="my_gazebo_plugin" filename="libmy_gazebo_plugin.so">
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
       <joint_name>joint1</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint2</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint3</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint4</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint5</joint_name>
     </plugin>
   </model>
 </sdf>

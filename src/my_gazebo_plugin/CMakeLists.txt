@@ -27,13 +27,10 @@ include_directories(
   ${SDFormat_INCLUDE_DIRS}
 )
 
-# link_directories(
-#   ${GAZEBO_LIBRARY_DIRS}
-# )
+link_directories(
+  ${GAZEBO_LIBRARY_DIRS}
+)
 
-# add_library(my_gazebo_plugin SHARED
-#   src/my_gazebo_plugin.cpp
-# )
 add_executable(motor_model src/motor_model.cpp)
 add_dependencies(motor_model my_gazebo_plugin_gencpp)
 target_link_libraries(motor_model 
@@ -41,14 +38,17 @@ target_link_libraries(motor_model
   ${GAZEBO_LIBRARIES}
 )
 
-# target_link_libraries(my_gazebo_plugin
-#   ${catkin_LIBRARIES}
-#   ${GAZEBO_LIBRARIES}
-#   ${SDFormat_LIBRARIES}
-# )
+add_library(motor_plugin SHARED
+  src/motor_plugin.cpp
+)
+target_link_libraries(motor_plugin
+  ${catkin_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
+  ${SDFormat_LIBRARIES}
+)
 
-# set(CATKIN_PACKAGE_LIB_DESTINATION lib/my_gazebo_plugin)
+set(CATKIN_PACKAGE_LIB_DESTINATION lib/motor_plugin)
 
-# install(TARGETS my_gazebo_plugin
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-# )
+install(TARGETS motor_plugin
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)

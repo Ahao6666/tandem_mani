@@ -3,14 +3,14 @@
   <name>my_gazebo_plugin</name>
   <version>0.0.0</version>
   <description>My Gazebo Plugin</description>
-  <maintainer email="you@yourdomain.tld">Your Name</maintainer>
-  <license>MIT</license>
+  <maintainer email="shenjiahao@westlake.edu.cn">Your Name</maintainer>
+  <license>Westlake University</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>gazebo_ros</build_depend>
 
   <export>
-    <gazebo_plugin>my_gazebo_plugin</gazebo_plugin>
+    <gazebo_plugin>motor_plugin</gazebo_plugin>
   </export>
 </package>
