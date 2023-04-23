@@ -45,12 +45,15 @@
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>trajectory_msgs</build_depend>
+  <build_depend>rosbag</build_depend>
+
 
   <run_depend>actionlib</run_depend>
   <run_depend>catkin_simple</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>trajectory_msgs</run_depend>
+  <run_depend>rosbag</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

@@ -7,270 +7,197 @@
  * @file tandem_control_client
  * @author Shen Jiahao <shenjiahao@westlake.edu.cn>
  *****************************************************************************/
-
-
 #include <ros/ros.h>
-#include <actionlib/client/simple_action_client.h>
-#include <tandem_control/trajAction.h>
 #include <vector>
 #include <math.h>
 #include <string>
 #include <gazebo_msgs/GetJointProperties.h>
-#include <gazebo_msgs/GetModelState.h>
-#include <geometry_msgs/Point.h>
+#include <gazebo_msgs/GetLinkState.h>
+#include <std_msgs/Float64.h>
 
+#include "manipulator_kinematic.h"
 
-// callback to get "result" message from action server
-void doneCb(const actionlib::SimpleClientGoalState& state,
-		const tandem_control::trajResultConstPtr& result) {
-	ROS_INFO("doneCb: server responded with state [%s]", state.toString().c_str());
+//compute Euler angles by R,定义在前面，定义在后面会报错
+Vector3d computeEulerAngles(Matrix3d R) {
+	double theta = 0, psi = 0, pfi = 0;
+	if (abs(R(2, 0)) < 1 - FLT_MIN || abs(R(2, 0)) > 1 + FLT_MIN) { // abs(R(2, 0)) != 1
+		double theta1 = -asin(R(2, 0));
+		double theta2 = M_PI- theta1;
+		double psi1 = atan2(R(2, 1) / cos(theta1), R(2, 2) / cos(theta1));
+		double psi2 = atan2(R(2, 0) / cos(theta2), R(2, 2) / cos(theta2));
+		double pfi1 = atan2(R(1, 0) / cos(theta1), R(0, 0) / cos(theta1));
+		double pfi2 = atan2(R(1, 0) / cos(theta2), R(0, 0) / cos(theta2));
+		theta = theta1;
+		psi = psi1;
+		pfi = pfi1;
+	}
+	else {
+		double phi = 0;
+		double delta = atan2(R(0, 1), R(0, 2));
+		if (R(2, 0) > -1 - FLT_MIN && R(2, 0) < -1 + FLT_MIN) { // R(2,0) == -1
+			theta = M_PI/ 2;
+			psi = phi + delta;
+		}
+		else {
+			theta = -M_PI/ 2;
+			psi = -phi + delta;
+		}
+	}
+	Vector3d EulerAngles;
+	EulerAngles[0] = psi;
+	EulerAngles[1] = theta;
+	EulerAngles[2] = pfi;
+	return EulerAngles;
 }
 
-// trajectory action client for the gripper robot
+void planEEPoseAndVel(Manipulator_Kinematic K_model,VectorXd &desiredEEPose,VectorXd &desiredEEVel){
+	double currentTime=ros::Time::now().toSec();
+	VectorXd jointAngle(5);
+	VectorXd jointAngleVel(5);
+
+	//input desired joints traj
+	for (int j = 0; j < 5; j++) {
+		jointAngle[j]= 5 * sin(currentTime) * M_PI / 30;
+		jointAngleVel[j]=5 * cos(currentTime) * M_PI / 30;
+		// jointAngle[j]= 1;
+		// jointAngleVel[j]=0;
+		}
+	//compute desired EE's pose
+	K_model.get_R_t(jointAngle);
+	Matrix3d EERotationMatrix;
+	EERotationMatrix= K_model.T.at(5).block<3, 3>(0, 0);
+
+	Vector3d pos = K_model.T.at(5).block<3, 1>(0, 3);
+	Vector3d EulerAngles=computeEulerAngles(EERotationMatrix);
+
+	desiredEEPose.resize(5);
+	desiredEEPose.block<3,1>(0,0)=pos;
+	desiredEEPose.block<2,1>(3,0)=EulerAngles.block<2,1>(0,0);
+
+	// compute desired vel by jacobian
+	K_model.get_jacobain(jointAngle);
+	MatrixXd jacobian(5,5);
+	jacobian=K_model.jacob.block<5, 5>(0, 0);
+	desiredEEVel=jacobian*jointAngleVel;
+}
+
+void getEEPose(Manipulator_Kinematic K_model,VectorXd current_jnts,VectorXd &EEPose){
+	//compute EE's pose
+	current_jnts.resize(5);
+	K_model.get_R_t(current_jnts);
+	Matrix3d EERotationMatrix;
+	EERotationMatrix= K_model.T.at(5).block<3, 3>(0, 0);
+
+	Vector3d pos = K_model.T.at(5).block<3, 1>(0, 3);
+	Vector3d EulerAngles=computeEulerAngles(EERotationMatrix);
+
+	EEPose.resize(5);
+	EEPose.block<3,1>(0,0)=pos;
+	EEPose.block<2,1>(3,0)=EulerAngles.block<2,1>(0,0);
+}
+
+// trajectory action client for the robot
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "tandem_control_client_node");
 	ros::NodeHandle nh;
 
-	// initialize an action client
-	actionlib::SimpleActionClient<tandem_control::trajAction> action_client(
-		"tandem_control", true);
-	// try to connect the client to action server
-	bool server_exist = action_client.waitForServer(ros::Duration(5.0));
-	ros::Duration sleep1s(1);
-	if(!server_exist) {
-		ROS_WARN("could not connect to server; retrying");
-		bool server_exist = action_client.waitForServer(ros::Duration(1.0));
-		sleep1s.sleep();
-	}
-	// if here, then connected to the server
-	ROS_INFO("connected to action server");
-
-	tandem_control::trajGoal goal;
-	// instantiate goal message
-	trajectory_msgs::JointTrajectory trajectory;
-	trajectory_msgs::JointTrajectoryPoint trajectory_points;
-	// joint_names field
-	trajectory.joint_names.resize(5);
-	trajectory.joint_names[0] = "joint1";
-	trajectory.joint_names[1] = "joint2";
-	trajectory.joint_names[2] = "joint3";
-	trajectory.joint_names[3] = "joint4";
-	trajectory.joint_names[4] = "joint5";
-	// positions and velocities field
-	trajectory_points.positions.resize(5);
-
+	ROS_INFO("client starts");
 	// initialize a service client to get joint positions
 	ros::ServiceClient get_jnt_state_client = nh.serviceClient<gazebo_msgs::GetJointProperties>(
 		"/gazebo/get_joint_properties");
 	gazebo_msgs::GetJointProperties get_joint_state_srv_msg;
-	// initialize a service client to get model state
-	ros::ServiceClient get_model_state_client = nh.serviceClient<gazebo_msgs::GetModelState>(
-		"/gazebo/get_model_state");
-	gazebo_msgs::GetModelState get_model_state_srv_msg;
 
-	// parameters for flow control, time assignment
-	double dt_sample = 1.0; // really coarse, let action server to interpolate
-	int time_1 = 3; // time for task 1
-	int time_2 = 3; // time for task 2
-	int time_3 = 3; // time for task 3
-	int time_4 = 3; // time for task 4
-	double time_delay = 1.0; // delay between every task
-	std::vector<double> start_jnts; // start joints for each move task
-	std::vector<double> end_jnts; // end joints for each move task
-	double fraction_of_range;
-	bool finish_before_timeout;
-	start_jnts.resize(5);
-	end_jnts.resize(5);
+	ros::ServiceClient get_link_state_client = nh.serviceClient<gazebo_msgs::GetLinkState>(
+		"/gazebo//get_link_state");
+	gazebo_msgs::GetLinkState get_link_state_srv_msg;
 
-	///////////////////////////////////////
-	// task 1.move to the first position.
-	///////////////////////////////////////
 
-	ROS_INFO("task 1.move to the first position.");
+    Manipulator_Kinematic K_model;
 
-	// get the original joint positions when this node is invoked
-	std::vector<double> origin_jnts;
-	origin_jnts.resize(5);
+	// publish desired joints
+	std::vector<double> cmd_jnts_pos; // command joints position to be sent
+	std::vector<ros::Publisher> cmd_jnts_pos_publisher;  // initialization will be in executeCB()
+	cmd_jnts_pos.resize(5);
+	cmd_jnts_pos_publisher.resize(5);
+
+	std::string jointNames[]={"joint1","joint2","joint3","joint4","joint5"};
+	//initialize command publishers for each joints，先advertise一下,再publish一下
+	for(int j=0; j < 5; j++){
+			cmd_jnts_pos_publisher[j] = nh.advertise<std_msgs::Float64>( 
+			jointNames[j] + "_cmd_jnts_pos", 1, true);
+	}
+
+	double dt=0.02;
+    ros::Rate rate_timer(1 / dt);
+
+   VectorXd current_jnts(5);
+    while(ros::ok()) {
+
+    //call for current joints
 	for (int i=0; i<5; i++) {
-		get_joint_state_srv_msg.request.joint_name = trajectory.joint_names[i];
+		get_joint_state_srv_msg.request.joint_name = jointNames[i];
 		get_jnt_state_client.call(get_joint_state_srv_msg);
-		origin_jnts[i] = get_joint_state_srv_msg.response.position[0];
+		current_jnts[i] = get_joint_state_srv_msg.response.position[0];
 	}
-	// assign current joints to start joints
-	start_jnts = origin_jnts;
 
-	// define the safe point, avoid singularity at origin
-	std::vector<double> safe_jnts;
-	safe_jnts.resize(5);
-	safe_jnts[0] = -M_PI/2; // joint1, 
-	safe_jnts[1] = -M_PI/2; // joint2, 
-	safe_jnts[2] = -M_PI/2; // joint3, 
-	safe_jnts[3] = -M_PI/2; // joint4, 
-	safe_jnts[4] = -M_PI/2; // joint5, 
-	// assign the safe joints to end joints
-	end_jnts = safe_jnts;
-
-	// prepare the goal message
-	trajectory.points.clear();
-	for (int i=0; i<time_1+1; i++) { // there are time_1+1 points, including start and end
-		fraction_of_range = (double)i/time_1; // cautious, convert to double
-		for (int j=0; j<5; j++) { // there are 5 joints
-			trajectory_points.positions[j] = start_jnts[j] + (end_jnts[j] - start_jnts[j])*fraction_of_range;
-		}
-		trajectory_points.time_from_start = ros::Duration((double)i);
-		trajectory.points.push_back(trajectory_points);
-	}
-	// copy this trajectory into our action goal
-	goal.trajectory = trajectory;
-	// send out the goal
-	action_client.sendGoal(goal, &doneCb);
-	// wait for expected duration plus some tolerance (2 seconds)
-	finish_before_timeout = action_client.waitForResult(ros::Duration(time_1 + 2.0));
-	if (!finish_before_timeout) {
-		ROS_WARN("task 1 is not done. (timeout)");
-		return 0;
-	}
-	else {
-		ROS_INFO("task 1 is done.");
-	}
-	// if here, task 1 is finished successfully
-	ros::Duration(time_delay).sleep(); // delay before jumping to next task
-
-	/////////////////////////////////////////////////
-	// 2.move to the second position.
-	/////////////////////////////////////////////////
-
-	// ROS_INFO("task 2.move to the second position.");
-
-	// origin_jnts.resize(5);
-	// for (int i=0; i<5; i++) {
-	// 	get_joint_state_srv_msg.request.joint_name = trajectory.joint_names[i];
-	// 	get_jnt_state_client.call(get_joint_state_srv_msg);
-	// 	origin_jnts[i] = get_joint_state_srv_msg.response.position[0];
-	// }
-
-	// // assign the start joints and end joints
-	// start_jnts = origin_jnts; // start with last joints
-	// end_jnts[0] = M_PI/2; 	// joint1, 
-	// end_jnts[1] = -M_PI/3; 	// joint2, 
-	// end_jnts[2] = 0; 		// joint3, 
-	// end_jnts[3] = 0; 		// joint4, 
-	// end_jnts[4] = M_PI/2;   // joint5, 
-
-	// // prepare the goal message
-	// trajectory.points.clear();
-	// for (int i=0; i<time_2+1; i++) { // there are time_2+1 points, including start and end
-	// 	fraction_of_range = (double)i/time_2;
-	// 	for (int j=0; j<5; j++) { // there are 4 joints
-	// 		trajectory_points.positions[j] = start_jnts[j] + (end_jnts[j] - start_jnts[j])*fraction_of_range;
-	// 	}
-	// 	trajectory_points.time_from_start = ros::Duration((double)i);
-	// 	trajectory.points.push_back(trajectory_points);
-	// }
-	// // copy this trajectory into our action goal
-	// goal.trajectory = trajectory;
-	// // send out the goal
-	// action_client.sendGoal(goal, &doneCb);
-	// // wait for expected duration plus some tolerance (2 seconds)
-	// finish_before_timeout = action_client.waitForResult(ros::Duration(time_2 + 2.0));
-	// if (!finish_before_timeout) {
-	// 	ROS_WARN("task 2 is not done. (timeout)");
-	// 	return 0;
-	// }
-	// else {
-	// 	ROS_INFO("task 2 is done.");
-	// }
-	// // if here, task 2 is finished successfully
-	// ros::Duration(time_delay).sleep(); // delay before jumping to next task
-
-	// /////////////////////////////////////
-	// // 3.move to the third position.
-	// /////////////////////////////////////
-
-	// ROS_INFO("task 3.move to the third position.");
-
-	// origin_jnts.resize(5);
-	// for (int i=0; i<5; i++) {
-	// 	get_joint_state_srv_msg.request.joint_name = trajectory.joint_names[i];
-	// 	get_jnt_state_client.call(get_joint_state_srv_msg);
-	// 	origin_jnts[i] = get_joint_state_srv_msg.response.position[0];
-	// }
-	// start_jnts = origin_jnts;
-	// end_jnts[0] = -M_PI/6; 	// joint1, 
-	// end_jnts[1] = -M_PI/2; 	// joint2, 
-	// end_jnts[2] = M_PI/2; 	// joint3, 
-	// end_jnts[3] = M_PI/2; 	// joint4, 
-	// // prepare the goal message
-	// trajectory.points.clear();
-	// for (int i=0; i<time_3+1; i++) { // there are time_3+1 points, including start and end
-	// 	fraction_of_range = (double)i/time_3;
-	// 	for (int j=0; j<5; j++) { // there are 4 joints
-	// 		trajectory_points.positions[j] = start_jnts[j] + (end_jnts[j] - start_jnts[j])*fraction_of_range;
-	// 	}
-	// 	trajectory_points.time_from_start = ros::Duration((double)i);
-	// 	trajectory.points.push_back(trajectory_points);
-	// }
-	// // copy this trajectory into our action goal
-	// goal.trajectory = trajectory;
-	// // send out the goal
-	// action_client.sendGoal(goal, &doneCb);
-	// // wait for expected duration plus some tolerance (2 seconds)
-	// finish_before_timeout = action_client.waitForResult(ros::Duration(time_3 + 2.0));
-	// if (!finish_before_timeout) {
-	// 	ROS_WARN("task 3 is not done. (timeout)");
-	// 	return 0;
-	// }
-	// else {
-	// 	ROS_INFO("task 3 is done.");
-	// }
-	// // if here, task 3 is finished successfully
-	// ros::Duration(time_delay).sleep(); // delay before jumping to next task
-
-	// ////////////////////////////////////////
-	// // 4.return to the initial position.
-	// ////////////////////////////////////////
-
-	// ROS_INFO("task 4.return to the initial position.");
-
-	// origin_jnts.resize(5);
-	// for (int i=0; i<5; i++) {
-	// 	get_joint_state_srv_msg.request.joint_name = trajectory.joint_names[i];
-	// 	get_jnt_state_client.call(get_joint_state_srv_msg);
-	// 	origin_jnts[i] = get_joint_state_srv_msg.response.position[0];
-	// }
-	// start_jnts = origin_jnts;
-	// end_jnts[0] = 0; // joint1, at its origin
-	// end_jnts[1] = 0; // joint2, at its origin
-	// end_jnts[2] = 0; // joint3, at its origin
-	// end_jnts[3] = 0; // joint4, at its origin
-	// // prepare the goal message
-	// trajectory.points.clear();
-	// for (int i=0; i<time_4+1; i++) { // there are time_4+1 points, including start and end
-	// 	fraction_of_range = (double)i/time_4;
-	// 	for (int j=0; j<5; j++) { // there are 4 joints
-	// 		trajectory_points.positions[j] = start_jnts[j] + (end_jnts[j] - start_jnts[j])*fraction_of_range;
-	// 	}
-	// 	trajectory_points.time_from_start = ros::Duration((double)i);
-	// 	trajectory.points.push_back(trajectory_points);
-	// }
-	// // copy this trajectory into our action goal
-	// goal.trajectory = trajectory;
-	// // send out the goal
-	// action_client.sendGoal(goal, &doneCb);
-	// // wait for expected duration plus some tolerance (2 seconds)
-	// finish_before_timeout = action_client.waitForResult(ros::Duration(time_4 + 2.0));
-	// if (!finish_before_timeout) {
-	// 	ROS_WARN("task 4 is not done. (timeout)");
-	// 	return 0;
-	// }
-	// else {
-	// 	ROS_INFO("task 4 is done.");
-	// }
-	// // if here, task 4 is finished successfully
-	// ros::Duration(time_delay).sleep(); // delay before jumping to next task
-
-	ROS_INFO("All task is finished!");
+	//call for current EE pose
+	VectorXd EEPose_gz(3);
+	get_link_state_srv_msg.request.link_name = "link5";
+	//get_link_state_srv_msg.request.reference_frame = "wrold";
+	get_link_state_client.call(get_link_state_srv_msg);
+	EEPose_gz[0]= get_link_state_srv_msg.response.link_state.pose.position.x;
+	EEPose_gz[1]= get_link_state_srv_msg.response.link_state.pose.position.y;
+	EEPose_gz[2]= get_link_state_srv_msg.response.link_state.pose.position.z;
+	ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
 	
+
+	//secondly,compute EE pose
+	VectorXd EEPose(5);
+	getEEPose(K_model,current_jnts,EEPose);
+	ROS_INFO("EEpose %f, %f, %f",EEPose[0],EEPose[1],EEPose[2]);
+
+	//thirdly,compute desired EE pose and vel
+	VectorXd desiredEEPose(5); VectorXd desiredEEVel(5);
+	planEEPoseAndVel(K_model,desiredEEPose,desiredEEVel);
+
+	//ClIK method 
+	VectorXd poseError(5);VectorXd EEVel(5); double kp=1;
+	poseError=desiredEEPose-EEPose;
+	EEVel=desiredEEVel+kp*poseError;
+
+	//DLS
+	K_model.get_jacobain(current_jnts);
+	MatrixXd jacobian(5,5);
+	jacobian=K_model.jacob.block<5, 5>(0, 0);
+	JacobiSVD<MatrixXd> svd(jacobian, ComputeThinU | ComputeThinV);
+	double sigma= svd.singularValues()[4];// 第五个特征值
+	double epsilon= 1 / M_PI;
+	double lambda_max = 0.001;
+	double lambda;
+	if (sigma >= epsilon)
+	{
+		lambda = 0;
+		}
+		else
+		{
+           lambda = lambda_max*(1-sigma / epsilon);
+		}
+		
+	MatrixXd pseudoInverseJacbian(5,5);VectorXd desiredJointsVel(5);VectorXd desiredJoints(5);
+	pseudoInverseJacbian = jacobian.transpose() *(jacobian * jacobian.transpose()+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
+	desiredJointsVel=pseudoInverseJacbian * EEVel;
+	desiredJoints=current_jnts+desiredJointsVel*dt;
+
+		for(int j=0; j < 5; j++){
+			std_msgs::Float64 cmd_jnts_pos_msg;
+			cmd_jnts_pos_msg.data = desiredJoints[j];
+			//cmd_jnts_pos_msg.data = 0;
+			cmd_jnts_pos_publisher[j].publish(cmd_jnts_pos_msg);
+		}
+
+		ros::spinOnce();
+		rate_timer.sleep(); // sleep the sample time
+	}
+
 	return 0;
 }
-

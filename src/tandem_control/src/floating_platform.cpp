@@ -15,8 +15,8 @@
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "floating_platform_node");
-	ros::NodeHandle node_handle;
-	ros::ServiceClient client = node_handle.serviceClient<gazebo_msgs::SetLinkState>("/gazebo/set_link_state");
+	ros::NodeHandle nh;
+	ros::ServiceClient client = nh.serviceClient<gazebo_msgs::SetLinkState>("/gazebo/set_link_state");
 
     gazebo_msgs::SetLinkState objstate;
 

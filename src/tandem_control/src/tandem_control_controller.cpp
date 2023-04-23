@@ -81,7 +81,7 @@ Joint::Joint(ros::NodeHandle nh, std::string joint_name, double dt) {
 	// initialize subscriber object
 	// pos_cmd_subscriber = nh.subscribe(joint_name + "_pos_cmd", 1, boost::bind(&Joint::posCmdCB, this, _1));
 	// why boost::bind gives compile errors here?
-	pos_cmd_subscriber = nh.subscribe(joint_name + "_pos_cmd", 1, &Joint::posCmdCB, this);
+	pos_cmd_subscriber = nh.subscribe(joint_name + "_cmd_jnts_pos", 1, &Joint::posCmdCB, this);
 	// initialize kpkv service server
 	kpkv_server = nh.advertiseService(joint_name + "_kpkv_service", &Joint::kpkvCallback, this);
 
@@ -109,6 +109,9 @@ void Joint::getJointState() {
 	get_jnt_state_client.call(get_joint_state_srv_msg);
 	// publish joint position
 	pos_cur = get_joint_state_srv_msg.response.position[0];
+
+	//ROS_INFO(" joints angle are %f", pos_cur);
+
 	pos_msg.data = pos_cur;
 	pos_publisher.publish(pos_msg);
 	// publish joint velocity
@@ -162,7 +165,7 @@ bool Joint::kpkvCallback(tandem_control::kpkv_msgRequest& request, tandem_contro
 int main(int argc, char **argv) {
     ros::init(argc, argv, "tandem_manipulator_controller");
     ros::NodeHandle nh;
-	ros::Duration half_sec(0.5);
+	ros::Duration half_sec(1);
 
 	// make sure apply_joint_effort service is ready
 	bool service_ready = false;
@@ -181,7 +184,7 @@ int main(int argc, char **argv) {
 	}
 	ROS_INFO("/gazebo/get_joint_properties service exists");
 
-	double dt = 0.1; // sample time for the controller
+	double dt = 0.02; // sample time for the controller
 
 	// instantiate 4 joint instances
 	Joint joint1(nh, "joint1", dt);

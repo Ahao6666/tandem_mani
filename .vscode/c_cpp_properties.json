@@ -6,10 +6,13 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
-                "/home/ahao/tandem_mani/devel/include/**",
-                "/opt/ros/melodic/include/**",
+                "/home/ji/tandem_mani/devel/include/**",
+                "/opt/ros/noetic/include/**",
                 "/usr/include/**",
-                "${workspaceFolder}/devel/.private/tandem_control/include"
+                "${workspaceFolder}/devel/.private/tandem_control/include",
+                "/opt/ros/noetic/include",
+                "/usr/include/c++/7",
+                "/usr/include/x86_64-linux-gnu/c++/7"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",

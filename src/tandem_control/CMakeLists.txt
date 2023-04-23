@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   catkin_simple
   roscpp
+  rosbag
   std_msgs
   message_generation
   actionlib_msgs
@@ -135,18 +136,21 @@ include_directories(
 # add_executable(tandem_control_node src/tandem_control_node.cpp)
 add_executable(tandem_control_controller src/tandem_control_controller.cpp)
 add_executable(tandem_control_kpkv_serviceClient src/kpkv_serviceClient.cpp)
-add_executable(tandem_control_server src/tandem_control_server.cpp)
+#add_executable(tandem_control_server src/tandem_control_server.cpp)
 add_executable(tandem_control_client src/tandem_control_client.cpp)
 add_executable(floating_platform src/floating_platform.cpp)
+add_executable(record_bag_node src/record_bag_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(tandem_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(tandem_control_controller tandem_control_gencpp)
 add_dependencies(tandem_control_kpkv_serviceClient tandem_control_gencpp)
-add_dependencies(tandem_control_server tandem_control_gencpp)
+#add_dependencies(tandem_control_server tandem_control_gencpp)
 add_dependencies(tandem_control_client tandem_control_gencpp)
 add_dependencies(floating_platform tandem_control_gencpp)
+add_dependencies(record_bag_node tandem_control_gencpp)
+
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tandem_control_node
@@ -154,9 +158,11 @@ add_dependencies(floating_platform tandem_control_gencpp)
 # )
 target_link_libraries(tandem_control_controller ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_kpkv_serviceClient ${catkin_LIBRARIES})
-target_link_libraries(tandem_control_server ${catkin_LIBRARIES})
+#target_link_libraries(tandem_control_server ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_client ${catkin_LIBRARIES})
 target_link_libraries(floating_platform ${catkin_LIBRARIES})
+target_link_libraries(record_bag_node ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##
@@ -167,10 +173,10 @@ target_link_libraries(floating_platform ${catkin_LIBRARIES})
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+ #install(PROGRAMS
+ #  scripts/getPos.py
+ #  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ #)
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS tandem_control tandem_control_node

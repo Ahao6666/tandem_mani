@@ -21,15 +21,21 @@ gnome-terminal -x  bash -c "rosrun tandem_control tandem_control_controller"
 sleep ${module_delay}
 echo "tandem_control_controller ready."
 
-# 3. tandem_control_server
-gnome-terminal -x  bash -c "rosrun tandem_control tandem_control_server"
-sleep ${module_delay}
-echo "tandem_control_server ready."
+# # 3. tandem_control_server
+# gnome-terminal -x  bash -c "rosrun tandem_control tandem_control_server"
+# sleep ${module_delay}
+# echo "tandem_control_server ready."
 
 # 4. tandem_control_client
 gnome-terminal -x  bash -c "rosrun tandem_control tandem_control_client"
 sleep ${module_delay}
 echo "tandem_control_client ready."
+
+# 5.record_bag_node
+#gnome-terminal -x  bash -c "rosrun tandem_control record_bag_node"
+#sleep ${module_delay}
+#echo "record_bag_node ready."
+
 
 echo "System is started."
 
