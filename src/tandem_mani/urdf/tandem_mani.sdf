@@ -2,7 +2,11 @@
 <sdf version='1.7'>
   <model name='tandem_mani'>
     <kinematic>1</kinematic>
-
+    <link name='world'>
+      <gravity>0</gravity>
+      <kinematic>1</kinematic>
+      <pose>0 0 0 0 -0 0</pose>
+    </link>
     <link name='platform'>
       <inertial>
         <pose>-4e-06 0 0.00212 0 -0 0</pose>
@@ -618,6 +622,37 @@
         </surface>
       </collision>
     </link>
+
+    <link name='end_point'>
+      <pose>-0.345 -0.001 0.045 -1.5708 -0 -0</pose>
+      <inertial>
+        <pose>0 0.036237 -0.0307 0 -0 0</pose>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>3.08628e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.67758e-07</iyy>
+          <iyz>0</iyz>
+          <izz>2.12514e-07</izz>
+        </inertia>
+      </inertial>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>0.005 0.005 0.005</size>
+            </box>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.005 0.005 0.005</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
     <joint name='joint1' type='revolute'>
       <parent>platform</parent>
       <child>link1</child>
@@ -753,10 +788,10 @@
       <axis>
         <xyz>0 0 -1</xyz>
         <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-          <effort>0</effort>
-          <velocity>0</velocity>
+          <lower>-10</lower>
+          <upper>10</upper>
+          <effort>10</effort>
+          <velocity>10</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -778,7 +813,43 @@
         </ode>
       </physics>
     </joint>
+    <joint name='joint6' type='fixed'>
+      <parent>link5</parent>
+      <child>end_point</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 0</xyz>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+          <suspension>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </suspension>
+        </ode>
+      </physics>
+    </joint>
+
     <static>0</static>
     <allow_auto_disable>1</allow_auto_disable>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint1</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint2</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint3</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint4</joint_name>
+    </plugin>
+    <plugin name="motor_plugin" filename="libmotor_plugin.so">
+      <joint_name>joint5</joint_name>
+    </plugin>
   </model>
 </sdf>

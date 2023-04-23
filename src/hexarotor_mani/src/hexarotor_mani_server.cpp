@@ -25,17 +25,17 @@ public:
 	~TrajectoryActionServer(void) {}
 private:
 	void send_joint_commands_(std::vector<double> cmd_jnts);
-	void executeCB(const actionlib::SimpleActionServer<hexarotor_mani::trajAction>::GoalConstPtr& goal);
+	void executeCB(const actionlib::SimpleActionServer<hexarotor_mani::hexarotor_mani_trajAction>::GoalConstPtr& goal);
 
 	ros::NodeHandle nh_; // a nodehandle is needed
 	// each joint in the robot needs a pos_cmd_publisher
 	std::vector<ros::Publisher> pos_cmd_publisher_;  // initialization will be in executeCB()
-	actionlib::SimpleActionServer<hexarotor_mani::trajAction> as_;
+	actionlib::SimpleActionServer<hexarotor_mani::hexarotor_mani_trajAction> as_;
 
 	// message types for the action
-	hexarotor_mani::trajActionGoal goal_; // goal message
-	hexarotor_mani::trajActionResult result_; // result message
-	hexarotor_mani::trajActionFeedback feedback_; // feedback message, not used
+	hexarotor_mani::hexarotor_mani_trajActionGoal goal_; // goal message
+	hexarotor_mani::hexarotor_mani_trajActionResult result_; // result message
+	hexarotor_mani::hexarotor_mani_trajActionFeedback feedback_; // feedback message, not used
 };
 
 TrajectoryActionServer::TrajectoryActionServer(ros::NodeHandle* nodehandle):
@@ -62,7 +62,7 @@ void TrajectoryActionServer::send_joint_commands_(std::vector<double> cmd_jnts) 
 }
 
 // substantial work will be done here
-void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<hexarotor_mani::trajAction>::GoalConstPtr& goal) {
+void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<hexarotor_mani::hexarotor_mani_trajAction>::GoalConstPtr& goal) {
 	ROS_INFO("in executecb...");
 	// avoid using "goal->trajectory" too much
 	trajectory_msgs::JointTrajectory trajectory = goal -> trajectory;
@@ -73,8 +73,19 @@ void TrajectoryActionServer::executeCB(const actionlib::SimpleActionServer<hexar
 	//initialize command publishers for each joints
 	pos_cmd_publisher_.resize(njnts);
 	for (int i=0; i<njnts; i++) {
+		std::string new_joint_name;
+		if (trajectory.joint_names[i] == "tandem_mani::joint1")
+			new_joint_name = "joint1";
+		if (trajectory.joint_names[i] == "tandem_mani::joint2")
+			new_joint_name = "joint2";
+		if (trajectory.joint_names[i] == "tandem_mani::joint3")
+			new_joint_name = "joint3";
+		if (trajectory.joint_names[i] == "tandem_mani::joint4")
+			new_joint_name = "joint4";
+		if (trajectory.joint_names[i] == "tandem_mani::joint5")
+			new_joint_name = "joint5";
 		pos_cmd_publisher_[i] = nh_.advertise<std_msgs::Float64>(
-			trajectory.joint_names[i] + "_pos_cmd", 1, true);
+			new_joint_name + "_pos_cmd", 1, true);
 	}
 
 	// joint array positions in the calculation of interpolation

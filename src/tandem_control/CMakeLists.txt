@@ -140,6 +140,7 @@ add_executable(tandem_control_kpkv_serviceClient src/kpkv_serviceClient.cpp)
 add_executable(tandem_control_client src/tandem_control_client.cpp)
 add_executable(floating_platform src/floating_platform.cpp)
 add_executable(record_bag_node src/record_bag_node.cpp)
+add_executable(end_point_position src/end_point_position.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -151,6 +152,7 @@ add_dependencies(tandem_control_client tandem_control_gencpp)
 add_dependencies(floating_platform tandem_control_gencpp)
 add_dependencies(record_bag_node tandem_control_gencpp)
 
+add_dependencies(end_point_position tandem_control_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tandem_control_node
@@ -211,3 +213,4 @@ target_link_libraries(record_bag_node ${catkin_LIBRARIES})
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+target_link_libraries(end_point_position ${catkin_LIBRARIES})
