@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<?xml version="1.0" ?>
 <sdf version='1.7'>
   <model name='tandem_mani'>
     <kinematic>1</kinematic>
@@ -8,832 +8,398 @@
       <pose>0 0 0 0 -0 0</pose>
     </link>
     <link name='platform'>
+      <pose>0 0 0 0 0 0</pose>
       <inertial>
-        <pose>-4e-06 0 0.00212 0 -0 0</pose>
-        <mass>6.2</mass>
+        <mass>6</mass>
         <inertia>
-          <ixx>2.00084</ixx>
+          <ixx>2</ixx>
           <ixy>0</ixy>
-          <ixz>1.58e-06</ixz>
-          <iyy>2.00084</iyy>
-          <iyz>-0</iyz>
+          <ixz>0</ixz>
+          <iyy>2</iyy>
+          <iyz>0</iyz>
           <izz>2</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
-      <enable_wind>0</enable_wind>
-      <kinematic>0</kinematic>
-      <pose>0 0 0 0 -0 0</pose>
-      <gravity>1</gravity>
-      <visual name='platform_visual'>
-        <pose>0 0 0 0 -0 0</pose>
-        <geometry>
-          <box>
-            <size>0.3 0.3 0.1</size>
-          </box>
-        </geometry>
-        <material>
-          <shader type='pixel'>
-            <normal_map>__default__</normal_map>
-          </shader>
-          <script>
-            <name>ModelPreview_1::platform::platform_visual_MATERIAL_</name>
-          </script>
-          <ambient>0.3 0.3 0.3 0</ambient>
-          <diffuse>0 0 0 1</diffuse>
-          <specular>0 0 0 1</specular>
-          <emissive>0 0 0 1</emissive>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <visual name='platform_fixed_joint_lump__base_link_visual_1'>
-        <pose>0 0 0.05 -1.5708 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://tandem_mani/meshes/base_link.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <shader type='pixel'>
-            <normal_map>__default__</normal_map>
-          </shader>
-          <script>
-            <name>ModelPreview_1::platform::platform_fixed_joint_lump__base_link_visual_1_MATERIAL_</name>
-          </script>
-          <ambient>0 0 0 1</ambient>
-          <diffuse>0 0 0 1</diffuse>
-          <specular>0 0 0 1</specular>
-          <emissive>0 0 0 1</emissive>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
       <collision name='platform_collision'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
-        <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
             <size>0.3 0.3 0.1</size>
           </box>
         </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
       </collision>
-      <collision name='platform_fixed_joint_lump__base_link_collision_1'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
-        <pose>0 0 0.05 -1.5708 0 0</pose>
+      <visual name='platform_visual'>
         <geometry>
-          <mesh>
-            <uri>model://tandem_mani/meshes/base_link.STL</uri>
-            <scale>1 1 1</scale>
-          </mesh>
+          <box>
+            <size>0.3 0.3 0.1</size>
+          </box>
         </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
-      </collision>
+      </visual>
     </link>
-    <link name='link1'>
-      <pose>-0.000158 0 0.0916 -1.5708 -0 -0</pose>
+    <joint name='platform_base_link' type='revolute'>
+      <pose relative_to='platform'>0 0 0.05 3.1516 0 0</pose>
+      <parent>platform</parent>
+      <child>base_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='base_link'>
+      <pose relative_to='platform_base_link'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>-1.7e-05 -0.040968 -0.000546 0 -0 0</pose>
-        <mass>0.2</mass>
+        <pose>0.000136 5.9e-05 -0.018366 0 -0 0</pose>
+        <mass>0.28597</mass>
         <inertia>
-          <ixx>1</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>1</iyy>
-          <iyz>0</iyz>
-          <izz>1</izz>
+          <ixx>0.000115724</ixx>
+          <ixy>4.70433e-08</ixy>
+          <ixz>-7.88346e-09</ixz>
+          <iyy>0.000115479</iyy>
+          <iyz>3.79749e-08</iyz>
+          <izz>0.000181648</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
       <enable_wind>0</enable_wind>
       <kinematic>0</kinematic>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='joint1' type='revolute'>
+      <pose relative_to='base_link'>0.000158 6.4e-05 -0.093 0 -0 1.5708</pose>
+      <parent>base_link</parent>
+      <child>link1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link1'>
+      <pose relative_to='joint1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-1.5e-05 -4.8e-05 0.00413 0 -0 0</pose>
+        <mass>0.244954</mass>
+        <inertia>
+          <ixx>9.36608e-05</ixx>
+          <ixy>6.38709e-08</ixy>
+          <ixz>9.09639e-08</ixz>
+          <iyy>0.000111053</iyy>
+          <iyz>-2.21214e-06</iyz>
+          <izz>8.44876e-05</izz>
+        </inertia>
+      </inertial>
+      <self_collide>1</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
+      <collision name='link1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <visual name='link1_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://tandem_mani/meshes/link1.STL</uri>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
           </mesh>
         </geometry>
-        <material>
-          <shader type='pixel'/>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
       </visual>
-      <collision name='link1_collision'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
-        <pose>0 0 0 0 -0 0</pose>
-        <geometry>
-          <mesh>
-            <uri>model://tandem_mani/meshes/link1.STL</uri>
-            <scale>1 1 1</scale>
-          </mesh>
-        </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
-      </collision>
     </link>
+    <joint name='joint2' type='revolute'>
+      <pose relative_to='link1'>0 0 0 -1.57079 -1.57079 -3.14159</pose>
+      <parent>link1</parent>
+      <child>link2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
     <link name='link2'>
-      <pose>-0.000158 -0.029 0.1428 -1.5708 -0 -0</pose>
+      <pose relative_to='joint2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>-0.057534 3.7e-05 0.028177 0 -0 0</pose>
-        <mass>0.2</mass>
+        <pose>-0 -0.065589 -0.000126 0 -0 0</pose>
+        <mass>0.230125</mass>
         <inertia>
-          <ixx>1</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>1</iyy>
-          <iyz>0</iyz>
-          <izz>1</izz>
+          <ixx>7.49193e-05</ixx>
+          <ixy>-3.29441e-13</ixy>
+          <ixz>-1.56145e-12</ixz>
+          <iyy>8.19198e-05</iyy>
+          <iyz>-5.7839e-07</iyz>
+          <izz>6.85328e-05</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
       <enable_wind>0</enable_wind>
       <kinematic>0</kinematic>
+      <collision name='link2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <visual name='link2_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://tandem_mani/meshes/link2.STL</uri>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
           </mesh>
         </geometry>
-        <material>
-          <shader type='pixel'/>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
       </visual>
-      <collision name='link2_collision'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
-        <pose>0 0 0 0 -0 0</pose>
-        <geometry>
-          <mesh>
-            <uri>model://tandem_mani/meshes/link2.STL</uri>
-            <scale>1 1 1</scale>
-          </mesh>
-        </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
-      </collision>
     </link>
+    <joint name='joint3' type='revolute'>
+      <pose relative_to='link2'>0 -0.189 0 1.5708 -0 0</pose>
+      <parent>link2</parent>
+      <child>link3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
     <link name='link3'>
-      <pose>-0.092458 -0.0005 0.1428 -1.5708 -0 -0</pose>
+      <pose relative_to='joint3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>-0.080231 -3.4e-05 -0.000288 0 -0 0</pose>
-        <mass>0.2</mass>
+        <pose>5e-06 3.6e-05 -0.009246 0 -0 0</pose>
+        <mass>0.249723</mass>
         <inertia>
-          <ixx>1</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>1</iyy>
-          <iyz>0</iyz>
-          <izz>1</izz>
+          <ixx>0.000142402</ixx>
+          <ixy>-2.70845e-08</ixy>
+          <ixz>-5.97668e-09</ixz>
+          <iyy>0.000154589</iyy>
+          <iyz>-4.14191e-06</iyz>
+          <izz>7.47273e-05</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
       <enable_wind>0</enable_wind>
       <kinematic>0</kinematic>
+      <collision name='link3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <visual name='link3_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://tandem_mani/meshes/link3.STL</uri>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
           </mesh>
         </geometry>
-        <material>
-          <shader type='pixel'/>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
       </visual>
-      <collision name='link3_collision'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
-        <pose>0 0 0 0 -0 0</pose>
-        <geometry>
-          <mesh>
-            <uri>model://tandem_mani/meshes/link3.STL</uri>
-            <scale>1 1 1</scale>
-          </mesh>
-        </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
-      </collision>
     </link>
+    <joint name='joint4' type='revolute'>
+      <pose relative_to='link3'>0 0 0 0.554293 -1.57079 -2.15255</pose>
+      <parent>link3</parent>
+      <child>link4</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
     <link name='link4'>
-      <pose>-0.188958 -0.0292 0.1428 -1.5708 -0 -0</pose>
+      <pose relative_to='joint4'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>-0.12453 -3e-05 0.028547 0 -0 0</pose>
-        <mass>0.2</mass>
+        <pose>0.140083 0 0.000271 0 -0 0</pose>
+        <mass>0.254533</mass>
         <inertia>
-          <ixx>1</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>1</iyy>
-          <iyz>0</iyz>
-          <izz>1</izz>
+          <ixx>5.97967e-05</ixx>
+          <ixy>5.81843e-20</ixy>
+          <ixz>6.60762e-07</ixz>
+          <iyy>0.000250962</iyy>
+          <iyz>-6.19785e-20</iyz>
+          <izz>0.00027523</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
       <enable_wind>0</enable_wind>
       <kinematic>0</kinematic>
+      <collision name='link4_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <visual name='link4_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://tandem_mani/meshes/link4.STL</uri>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
           </mesh>
         </geometry>
-        <material>
-          <shader type='pixel'/>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
       </visual>
-      <collision name='link4_collision'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
-        <pose>0 0 0 0 -0 0</pose>
-        <geometry>
-          <mesh>
-            <uri>model://tandem_mani/meshes/link4.STL</uri>
-            <scale>1 1 1</scale>
-          </mesh>
-        </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
-      </collision>
     </link>
+    <joint name='joint5' type='revolute'>
+      <pose relative_to='link4'>0.157 0 0 0 -0 0</pose>
+      <parent>link4</parent>
+      <child>link5</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
     <link name='link5'>
-      <pose>-0.345958 0.0295 0.1428 -1.5708 -0 -0</pose>
+      <pose relative_to='joint5'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0.036237 -0.0307 0 -0 0</pose>
-        <mass>0.0387632</mass>
+        <pose>-0 -0.039549 0.00038 0 -0 0</pose>
+        <mass>0.0494024</mass>
         <inertia>
-          <ixx>3.08628e-05</ixx>
-          <ixy>-8.36133e-21</ixy>
-          <ixz>2.17053e-12</ixz>
-          <iyy>1.67758e-05</iyy>
-          <iyz>-1.84233e-20</iyz>
-          <izz>2.12514e-05</izz>
+          <ixx>4.37835e-05</ixx>
+          <ixy>-1.71637e-12</ixy>
+          <ixz>1.57326e-13</ixz>
+          <iyy>1.65286e-05</iyy>
+          <iyz>5.1529e-07</iyz>
+          <izz>3.59336e-05</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
       <enable_wind>0</enable_wind>
       <kinematic>0</kinematic>
+      <collision name='link5_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <visual name='link5_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://tandem_mani/meshes/link5.STL</uri>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
           </mesh>
         </geometry>
-        <material>
-          <shader type='pixel'/>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
       </visual>
-      <collision name='link5_collision'>
-        <laser_retro>0</laser_retro>
-        <max_contacts>10</max_contacts>
+    </link>
+    <joint name='end_joint' type='revolute'>
+      <pose relative_to='link5'>0 -0.12 -0.0005 -2.69849 -1.57079 1.12769</pose>
+      <parent>link5</parent>
+      <child>end_point</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='end_point'>
+      <pose relative_to='end_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0 0 0.003124 0 -0 0</pose>
+        <mass>0.000333383</mass>
+        <inertia>
+          <ixx>2.71619e-09</ixx>
+          <ixy>-1.96455e-24</ixy>
+          <ixz>-5.89399e-24</ixz>
+          <iyy>2.71619e-09</iyy>
+          <iyz>-4.54736e-24</iyz>
+          <izz>4.44638e-09</izz>
+        </inertia>
+      </inertial>
+      <self_collide>1</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
+      <collision name='end_point_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://tandem_mani/meshes/link5.STL</uri>
             <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/end_point.STL</uri>
           </mesh>
         </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
-            <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-            <bullet>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e+13</kp>
-              <kd>1</kd>
-            </bullet>
-          </contact>
-        </surface>
       </collision>
+      <visual name='end_point_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/end_point.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
     </link>
-
-    <link name='end_point'>
-      <pose>-0.345 -0.001 0.045 -1.5708 -0 -0</pose>
-      <inertial>
-        <pose>0 0.036237 -0.0307 0 -0 0</pose>
-        <mass>0.001</mass>
-        <inertia>
-          <ixx>3.08628e-07</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>1.67758e-07</iyy>
-          <iyz>0</iyz>
-          <izz>2.12514e-07</izz>
-        </inertia>
-      </inertial>
-        <visual name='visual'>
-          <geometry>
-            <box>
-              <size>0.005 0.005 0.005</size>
-            </box>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>0.005 0.005 0.005</size>
-            </box>
-          </geometry>
-        </collision>
-      </link>
-
-    <joint name='joint1' type='revolute'>
-      <parent>platform</parent>
-      <child>link1</child>
-      <pose>0 -0 -0 0 -0 0</pose>
-      <axis>
-        <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-30</lower>
-          <upper>30</upper>
-          <effort>100</effort>
-          <velocity>100</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='joint2' type='revolute'>
-      <parent>link1</parent>
-      <child>link2</child>
-      <pose>0 -0 -0 0 -0 0</pose>
-      <axis>
-        <xyz>0 0 -1</xyz>
-        <limit>
-          <lower>-30</lower>
-          <upper>30</upper>
-          <effort>100</effort>
-          <velocity>100</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='joint3' type='revolute'>
-      <parent>link2</parent>
-      <child>link3</child>
-      <pose>0 -0 -0 0 -0 0</pose>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <limit>
-          <lower>-30</lower>
-          <upper>30</upper>
-          <effort>100</effort>
-          <velocity>100</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='joint4' type='revolute'>
-      <parent>link3</parent>
-      <child>link4</child>
-      <pose>0 -0 -0 0 -0 0</pose>
-      <axis>
-        <xyz>0 0 -1</xyz>
-        <limit>
-          <lower>-30</lower>
-          <upper>30</upper>
-          <effort>100</effort>
-          <velocity>100</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='joint5' type='revolute'>
-      <parent>link4</parent>
-      <child>link5</child>
-      <pose>-0 0 -0 0 -0 0</pose>
-      <axis>
-        <xyz>0 0 -1</xyz>
-        <limit>
-          <lower>-10</lower>
-          <upper>10</upper>
-          <effort>10</effort>
-          <velocity>10</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='joint6' type='fixed'>
-      <parent>link5</parent>
-      <child>end_point</child>
-      <pose>0 0 0 0 0 0</pose>
-      <axis>
-        <xyz>0 0 0</xyz>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-
     <static>0</static>
     <allow_auto_disable>1</allow_auto_disable>
     <plugin name="motor_plugin" filename="libmotor_plugin.so">
