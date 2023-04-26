@@ -13,3 +13,7 @@ To get program running, first compile it using catkin_make in your ros workspace
 or you can run `.start.sh` or `roslaunch start.launch` directly
 
   - `rosrun tandem_control floating_platform` to move the platform  
+
+note:
+  - I don't know why tandem_control_client node cannot start in start.launch so 
+  - it need manually start `rosrun tandem_control tandem_control_client`

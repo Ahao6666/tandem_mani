@@ -52,7 +52,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
+            <uri>model://tandem_mani/meshes/base_link.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -131,7 +131,7 @@
         <pose>0 0 0.05 -1.5708 0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/base_link_no_collision.STL</uri>
+            <uri>model://tandem_mani/meshes/base_link.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -204,7 +204,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
+            <uri>model://tandem_mani/meshes/link1.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -219,7 +219,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link1_no_collision.STL</uri>
+            <uri>model://tandem_mani/meshes/link1.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -292,7 +292,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
+            <uri>model://tandem_mani/meshes/link2.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -307,7 +307,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link2_no_collision.STL</uri>
+            <uri>model://tandem_mani/meshes/link2.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -380,7 +380,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
+            <uri>model://tandem_mani/meshes/link3.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -395,7 +395,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link3_no_collision.STL</uri>
+            <uri>model://tandem_mani/meshes/link3.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -468,7 +468,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
+            <uri>model://tandem_mani/meshes/link4.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -483,7 +483,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link4_no_collision.STL</uri>
+            <uri>model://tandem_mani/meshes/link4.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -556,7 +556,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
+            <uri>model://tandem_mani/meshes/link5.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -571,7 +571,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/ji/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
+            <uri>model://tandem_mani/meshes/link5.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>

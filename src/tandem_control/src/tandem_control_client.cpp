@@ -5,8 +5,13 @@
 
 /******************************************************************************
  * @file tandem_control_client
- * @author Shen Jiahao <shenjiahao@westlake.edu.cn>
+ * @brief This node controls the tandem manipulator in Gazebo simulation environment
+ * @details This node subscribes to the joint states of the tandem manipulator and publishes the desired end-effector pose and velocity to the /tandem_manipulator/joint_trajectory_controller/command topic.
+ * @note Make sure to run the gazebo simulation and the joint trajectory controller before running this node.
+ * @note If you encounter an error "process has died [pid XXXX, exit code -11]", try increasing the memory limit by running "ulimit -s unlimited" in the terminal before running the node.
+ * @author Shen Jiahao
  *****************************************************************************/
+
 #include <ros/ros.h>
 #include <vector>
 #include <math.h>
@@ -108,9 +113,8 @@ int main(int argc, char** argv) {
 	gazebo_msgs::GetJointProperties get_joint_state_srv_msg;
 
 	ros::ServiceClient get_link_state_client = nh.serviceClient<gazebo_msgs::GetLinkState>(
-		"/gazebo//get_link_state");
+		"/gazebo/get_link_state");
 	gazebo_msgs::GetLinkState get_link_state_srv_msg;
-
 
     Manipulator_Kinematic K_model;
 
@@ -130,63 +134,63 @@ int main(int argc, char** argv) {
 	double dt=0.02;
     ros::Rate rate_timer(1 / dt);
 
-   VectorXd current_jnts(5);
+    VectorXd current_jnts(5);
     while(ros::ok()) {
 
-    //call for current joints
-	for (int i=0; i<5; i++) {
-		get_joint_state_srv_msg.request.joint_name = jointNames[i];
-		get_jnt_state_client.call(get_joint_state_srv_msg);
-		current_jnts[i] = get_joint_state_srv_msg.response.position[0];
-	}
+		//call for current joints
+		for (int i=0; i<5; i++) {
+			get_joint_state_srv_msg.request.joint_name = jointNames[i];
+			get_jnt_state_client.call(get_joint_state_srv_msg);
+			current_jnts[i] = get_joint_state_srv_msg.response.position[0];
+			ROS_INFO("joint position = %f",get_joint_state_srv_msg.response.position[0]);
+		}
 
-	//call for current EE pose
-	VectorXd EEPose_gz(3);
-	get_link_state_srv_msg.request.link_name = "link5";
-	//get_link_state_srv_msg.request.reference_frame = "wrold";
-	get_link_state_client.call(get_link_state_srv_msg);
-	EEPose_gz[0]= get_link_state_srv_msg.response.link_state.pose.position.x;
-	EEPose_gz[1]= get_link_state_srv_msg.response.link_state.pose.position.y;
-	EEPose_gz[2]= get_link_state_srv_msg.response.link_state.pose.position.z;
-	ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
-	
+		//call for current EE pose
+		VectorXd EEPose_gz(3);
+		get_link_state_srv_msg.request.link_name = "link5";
+		//get_link_state_srv_msg.request.reference_frame = "wrold";
+		get_link_state_client.call(get_link_state_srv_msg);
+		EEPose_gz[0]= get_link_state_srv_msg.response.link_state.pose.position.x;
+		EEPose_gz[1]= get_link_state_srv_msg.response.link_state.pose.position.y;
+		EEPose_gz[2]= get_link_state_srv_msg.response.link_state.pose.position.z;
+		// ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
 
-	//secondly,compute EE pose
-	VectorXd EEPose(5);
-	getEEPose(K_model,current_jnts,EEPose);
-	ROS_INFO("EEpose %f, %f, %f",EEPose[0],EEPose[1],EEPose[2]);
+		//secondly,compute EE pose
+		VectorXd EEPose(5);
+		getEEPose(K_model,current_jnts,EEPose);
+		// ROS_INFO("EEpose %f, %f, %f",EEPose[0],EEPose[1],EEPose[2]);
 
-	//thirdly,compute desired EE pose and vel
-	VectorXd desiredEEPose(5); VectorXd desiredEEVel(5);
-	planEEPoseAndVel(K_model,desiredEEPose,desiredEEVel);
+		//thirdly,compute desired EE pose and vel
+		VectorXd desiredEEPose(5); VectorXd desiredEEVel(5);
+		planEEPoseAndVel(K_model,desiredEEPose,desiredEEVel);
 
-	//ClIK method 
-	VectorXd poseError(5);VectorXd EEVel(5); double kp=1;
-	poseError=desiredEEPose-EEPose;
-	EEVel=desiredEEVel+kp*poseError;
+		//ClIK method 
+		VectorXd poseError(5);VectorXd EEVel(5); double kp=1;
+		poseError=desiredEEPose-EEPose;
+		EEVel=desiredEEVel+kp*poseError;
 
-	//DLS
-	K_model.get_jacobain(current_jnts);
-	MatrixXd jacobian(5,5);
-	jacobian=K_model.jacob.block<5, 5>(0, 0);
-	JacobiSVD<MatrixXd> svd(jacobian, ComputeThinU | ComputeThinV);
-	double sigma= svd.singularValues()[4];// 第五个特征值
-	double epsilon= 1 / M_PI;
-	double lambda_max = 0.001;
-	double lambda;
-	if (sigma >= epsilon)
-	{
-		lambda = 0;
+		//DLS
+		K_model.get_jacobain(current_jnts);
+		MatrixXd jacobian(5,5);
+		jacobian=K_model.jacob.block<5, 5>(0, 0);
+		JacobiSVD<MatrixXd> svd(jacobian, ComputeThinU | ComputeThinV);
+		double sigma= svd.singularValues()[4];// 第五个特征值
+		double epsilon= 1 / M_PI;
+		double lambda_max = 0.001;
+		double lambda;
+		if (sigma >= epsilon)
+		{
+			lambda = 0;
 		}
 		else
 		{
            lambda = lambda_max*(1-sigma / epsilon);
 		}
 		
-	MatrixXd pseudoInverseJacbian(5,5);VectorXd desiredJointsVel(5);VectorXd desiredJoints(5);
-	pseudoInverseJacbian = jacobian.transpose() *(jacobian * jacobian.transpose()+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
-	desiredJointsVel=pseudoInverseJacbian * EEVel;
-	desiredJoints=current_jnts+desiredJointsVel*dt;
+		MatrixXd pseudoInverseJacbian(5,5);VectorXd desiredJointsVel(5);VectorXd desiredJoints(5);
+		pseudoInverseJacbian = jacobian.transpose() *(jacobian * jacobian.transpose()+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
+		desiredJointsVel=pseudoInverseJacbian * EEVel;
+		desiredJoints=current_jnts+desiredJointsVel*dt;
 
 		for(int j=0; j < 5; j++){
 			std_msgs::Float64 cmd_jnts_pos_msg;

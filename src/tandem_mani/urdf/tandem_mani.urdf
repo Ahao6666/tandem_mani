@@ -74,7 +74,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/base_link_no_collision.STL" />
+          filename="package://tandem_mani/meshes/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -111,7 +111,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link1_no_collision.STL" />
+          filename="package://tandem_mani/meshes/link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -166,7 +166,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link2_no_collision.STL" />
+          filename="package://tandem_mani/meshes/link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -221,7 +221,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link3_no_collision.STL" />
+          filename="package://tandem_mani/meshes/link3.STL" />
       </geometry>
     </collision>
   </link>
@@ -276,7 +276,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://tandem_mani/meshes/link4_no_collision.STL" />
+          filename="package://tandem_mani/meshes/link4.STL" />
       </geometry>
     </collision>
   </link>
