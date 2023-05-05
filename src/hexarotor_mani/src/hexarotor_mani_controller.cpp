@@ -21,7 +21,7 @@ public:
 	Joint(ros::NodeHandle nh, std::string joint_name, double dt); // constructor
 	~Joint() {}; // destructor
 	void getJointState();
-	void jointTrqControl(double dt);
+	void jointTrqControl();
 	void paramSetting(double kp, double kv);
 private:
 	// callback for the pos_cmd subscriber
@@ -118,7 +118,7 @@ void Joint::getJointState() {
 }
 
 // calculate joint torque, publish them, send to gazebo
-void Joint::jointTrqControl(double dt) {
+void Joint::jointTrqControl() {
 	pos_err = pos_cmd - pos_cur;
 	// watch for periodicity
 	if (pos_err > M_PI)
@@ -190,11 +190,11 @@ int main(int argc, char **argv) {
 		joint5.getJointState();
 
 		// calculate the torque for each joint and publish them
-		joint1.jointTrqControl(dt);
-		joint2.jointTrqControl(dt);
-		joint3.jointTrqControl(dt);
-		joint4.jointTrqControl(dt);
-		joint5.jointTrqControl(dt);
+		joint1.jointTrqControl();
+		joint2.jointTrqControl();
+		joint3.jointTrqControl();
+		joint4.jointTrqControl();
+		joint5.jointTrqControl();
 
 		ros::spinOnce(); // update pos_cmd, kpkv
 		ros::Duration(dt).sleep();

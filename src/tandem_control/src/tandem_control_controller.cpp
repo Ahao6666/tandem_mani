@@ -163,7 +163,7 @@ bool Joint::kpkvCallback(tandem_control::kpkv_msgRequest& request, tandem_contro
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "tandem_manipulator_controller");
+    ros::init(argc, argv, "tandem_control_controller_node");
     ros::NodeHandle nh;
 	ros::Duration half_sec(1);
 
@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
 	}
 	ROS_INFO("/gazebo/get_joint_properties service exists");
 
-	double dt = 0.02; // sample time for the controller
+	double dt = 0.01; // sample time for the controller
 
 	// instantiate 4 joint instances
 	Joint joint1(nh, "joint1", dt);
@@ -193,11 +193,11 @@ int main(int argc, char **argv) {
 	Joint joint4(nh, "joint4", dt);
 	Joint joint5(nh, "joint5", dt);
 
-	joint1.kpkvSetting(50, 15);
-	joint2.kpkvSetting(50, 15);
-	joint3.kpkvSetting(30, 10);
-	joint4.kpkvSetting(30, 10);
-	joint5.kpkvSetting(30, 10);
+	joint1.kpkvSetting(20, 1.0);
+	joint2.kpkvSetting(20, 0.8);
+	joint3.kpkvSetting(3.0, 0.1);
+	joint4.kpkvSetting(2.0, 0.05);
+	joint5.kpkvSetting(0.5, 0.01);
 
 
 	ros::Rate rate_timer(1 / dt);

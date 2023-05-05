@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
 			jointNames[j] + "_cmd_jnts_pos", 1, true);
 	}
 
-	double dt=0.02;
+	double dt=0.01;
     ros::Rate rate_timer(1 / dt);
 
     VectorXd current_jnts(5);
@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
 			get_joint_state_srv_msg.request.joint_name = jointNames[i];
 			get_jnt_state_client.call(get_joint_state_srv_msg);
 			current_jnts[i] = get_joint_state_srv_msg.response.position[0];
-			ROS_INFO("joint position = %f",get_joint_state_srv_msg.response.position[0]);
+			// ROS_INFO("%s = %f",jointNames[i].c_str(), get_joint_state_srv_msg.response.position[0]);
 		}
 
 		//call for current EE pose
@@ -153,12 +153,12 @@ int main(int argc, char** argv) {
 		EEPose_gz[0]= get_link_state_srv_msg.response.link_state.pose.position.x;
 		EEPose_gz[1]= get_link_state_srv_msg.response.link_state.pose.position.y;
 		EEPose_gz[2]= get_link_state_srv_msg.response.link_state.pose.position.z;
-		// ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
+		ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
 
 		//secondly,compute EE pose
 		VectorXd EEPose(5);
 		getEEPose(K_model,current_jnts,EEPose);
-		// ROS_INFO("EEpose %f, %f, %f",EEPose[0],EEPose[1],EEPose[2]);
+		ROS_INFO("EEpose %f, %f, %f",EEPose[0],EEPose[1],EEPose[2]);
 
 		//thirdly,compute desired EE pose and vel
 		VectorXd desiredEEPose(5); VectorXd desiredEEVel(5);

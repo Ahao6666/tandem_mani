@@ -14,7 +14,5 @@ or you can run `.start.sh` or `roslaunch start.launch` directly
 
   - `rosrun tandem_control floating_platform` to move the platform  
 
-note:
-  1. I don't know why tandem_control_client node cannot start in start.launch so   
-      it need manually start `rosrun tandem_control tandem_control_client`  
-  2. need to modify the #relative path to absolute path# in sdf file 
+note: 
+  1. need to modify the $relative path to absolute path$ in sdf file
