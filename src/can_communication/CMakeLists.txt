@@ -12,6 +12,8 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(can_node src/can_node.cpp)
 add_executable(can_motor src/can_motor.cpp)
+add_executable(motor_MS src/motor_MS.c)
 
 target_link_libraries(can_node ${catkin_LIBRARIES})
 target_link_libraries(can_motor ${catkin_LIBRARIES})
+target_link_libraries(motor_MS ${catkin_LIBRARIES})

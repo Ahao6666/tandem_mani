@@ -1,15 +1,16 @@
 #include "can_motor.h"
 
-int sockfd;
 can_msgs::Frame frame_send;
-can_msgs::Frame frame_rece;
 ros::Publisher can_pub;
 uint8_t canDataToSend[6];		 /* 发送数据缓存 */
 mcProtocol_t mcProtocol;
 mcProtocolMotorData_t *motorData = NULL;
 typedef void (*MC_DataDecode)(uint8_t, uint8_t, uint8_t );
 u2f_u u2f;
-
+#define  BYTE0(dwTemp)       ( *( (uint8_t *)(&dwTemp)	)  )
+#define  BYTE1(dwTemp)       ( *( (uint8_t *)(&dwTemp) + 1) )
+#define  BYTE2(dwTemp)       ( *( (uint8_t *)(&dwTemp) + 2) )
+#define  BYTE3(dwTemp)       ( *( (uint8_t *)(&dwTemp) + 3) )
 /* 解析函数向量表1 */
 static const MC_DataDecode MC_DecodeTalbe1[0X04] =
 {
@@ -47,6 +48,193 @@ static void MC_ReadPositionDecode(uint8_t index, uint8_t mode,uint8_t cmd)
 	u2f.c[3] = mcProtocol.canRxData[5];
 	motorData[MC_GetMotorNum(index)].pos = u2f.f;
 }
+
+uint8_t MC_GetMotorNum(uint8_t index)
+{
+	for(uint8_t i = 0; i<mcProtocol.onlineNum; i++)
+	{
+		if(index ==mcProtocol.connectID[i] )
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+void MC_FindOnlineMotor(void)
+{
+	mcProtocol.refreshFlag = 1;
+	for(uint8_t i = 0;i<0x10; i++ )
+	{
+		MC_HeartbeatEncode(i);
+		/* connect clean */
+		mcProtocol.connectFlag[i] = 0;
+	}
+}
+
+void MC_ProtocolSendLoop(void)	
+{
+	if(mcProtocol.findDone == 1)
+	{
+		/* beatheart all can device */
+		for(uint8_t i = 0; i<mcProtocol.onlineNum; i++)
+		{
+			motorData[i].sTick++;
+			mcProtocol.sTick++;
+			MC_HeartbeatEncode(motorData[i].canIndex);
+		}
+	}
+}
+
+void MC_HeartbeatEncode(uint8_t index)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(index, MODE_HEARTBEAT , 0x01 , canDataToSend);
+
+}
+
+void MC_ReadIdEncode(uint8_t index)
+{
+	
+}
+
+void MC_ReadIqEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_READ, CMD_IQ, canDataToSend);
+
+}
+void MC_ReadSpeedEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_READ, CMD_SPEED, canDataToSend);	
+}
+void MC_ReadPositionEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_READ, CMD_POS, canDataToSend);		
+}
+void MC_WriteIdEncode(uint8_t index)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	
+}
+void MC_WriteIqEncode(uint8_t num, int16_t iq, uint16_t fDuration)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[2] = BYTE0(iq);
+	canDataToSend[3] = BYTE1(iq);
+	canDataToSend[4] = BYTE0(fDuration);
+	canDataToSend[5] = BYTE1(fDuration);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_WRITE, CMD_IQ, canDataToSend);
+}
+void MC_WriteSpeedEncode(uint8_t num, int16_t speed, uint16_t fDuration)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[2] = BYTE0(speed);
+	canDataToSend[3] = BYTE1(speed);
+	canDataToSend[4] = BYTE0(fDuration);
+	canDataToSend[5] = BYTE1(fDuration);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_WRITE, CMD_SPEED, canDataToSend);
+}
+
+void MC_WritePositionEncode(uint8_t num, float position, uint16_t fDuration)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[0] = BYTE0(position);
+	canDataToSend[1] = BYTE1(position);
+	canDataToSend[2] = BYTE2(position);
+	canDataToSend[3] = BYTE3(position);
+	canDataToSend[4] = BYTE0(fDuration);
+	canDataToSend[5] = BYTE1(fDuration);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_WRITE, CMD_POS, canDataToSend);
+}
+
+void MC_FastWriteIqEncode(uint8_t num, int16_t iq, uint16_t fDuration)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[2] = BYTE0(iq);
+	canDataToSend[3] = BYTE1(iq);
+	canDataToSend[4] = BYTE0(fDuration);
+	canDataToSend[5] = BYTE1(fDuration);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_FASTWRITE, CMD_IQ, canDataToSend);
+}
+void MC_FastWriteSpeedEncode(uint8_t num, int16_t speed, uint16_t fDuration)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[2] = BYTE0(speed);
+	canDataToSend[3] = BYTE1(speed);
+	canDataToSend[4] = BYTE0(fDuration);
+	canDataToSend[5] = BYTE1(fDuration);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_FASTWRITE, CMD_SPEED, canDataToSend);
+}
+
+void MC_FastWritePositionEncode(uint8_t num, float position, uint16_t fDuration)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[0] = BYTE0(position);
+	canDataToSend[1] = BYTE1(position);
+	canDataToSend[2] = BYTE2(position);
+	canDataToSend[3] = BYTE3(position);
+	canDataToSend[4] = BYTE0(fDuration);
+	canDataToSend[5] = BYTE1(fDuration);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_FASTWRITE, CMD_POS, canDataToSend);
+}
+
+void MC_StartMotorEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_CMDWRITE, CMD_STARTMOTOR, canDataToSend);
+}
+
+void MC_StopMotorEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_CMDWRITE, CMD_STOPMOTOR, canDataToSend);
+}
+
+void MC_CleanMotorEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_CMDWRITE, CMD_CLEANERR, canDataToSend);
+}
+
+void MC_SetMotorModeEncode(uint8_t num , uint8_t mode)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[0] = mode;
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_CMDWRITE, CMD_RUNMODE, canDataToSend);
+}
+
+void MC_SetPID_Encode(uint8_t num, uint8_t type, uint8_t pid, int16_t data1, uint8_t saveFlag)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[0] = saveFlag;
+	canDataToSend[1] = 0;
+	canDataToSend[2] = 0;
+	canDataToSend[3] = type;
+	canDataToSend[4] = BYTE0(data1);
+	canDataToSend[5] = BYTE1(data1);
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_REGWRITE, pid, canDataToSend);	
+}
+
+void MC_SetCanIndexEncode(uint8_t num , uint8_t index)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[3] = index;
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_REGWRITE, REG_CANINDEX, canDataToSend);
+}
+
+void MC_SetAllSaveEncode(uint8_t num)
+{
+	memset(canDataToSend, 0, sizeof(canDataToSend));
+	canDataToSend[0] = 0x01;	
+	MC_ProtocolEncode(motorData[num].canIndex, MODE_REGWRITE, REG_ALL, canDataToSend);
+}
+
+void MC_ProtocolReturn(uint8_t index, uint8_t mode, uint8_t cmd, uint8_t flag)
+{
+
+}
 void MC_ProtocolEncode(uint8_t index, uint8_t mode, uint8_t cmd, uint8_t* buf)
 {
   // 创建一个CAN帧
@@ -67,9 +255,10 @@ void MC_ProtocolEncode(uint8_t index, uint8_t mode, uint8_t cmd, uint8_t* buf)
   frame_send.data[7] = buf[5];
   can_pub.publish(frame_send);
 }
+
 void MC_ProtocolInit(void)
 {
-	for(uint8_t i = 0; i<0x05; i++)
+	for(uint8_t i = 0; i<0x10; i++)
 	{
 		mcProtocol.connectFlag[i] = 0;
 		mcProtocol.connectID[i] = 0;
@@ -81,7 +270,6 @@ void MC_ProtocolInit(void)
 //电机控制协议解析
 void MC_ProtocolDecode(void)
 {
-  // std::cout<<"11111111"<<std::endl;
 	uint8_t connectNum = 0;
   switch (mcProtocol.canRxData[0])
   {
@@ -108,14 +296,13 @@ void MC_ProtocolDecode(void)
   }
 	if(mcProtocol.refreshFlag == 1)
 	{
-    std::cout<<mcProtocol.tick<<std::endl;
 		mcProtocol.tick++;
 		if(mcProtocol.tick % 10 == 0)
 		{
 			mcProtocol.refreshFlag = 0;
 			connectNum = 0;
 
-			for(uint8_t i = 0; i<0x30; i++)
+			for(uint8_t i = 0; i<0x10; i++)
 			{
 				if(mcProtocol.connectFlag[i] == 1)
 				{
@@ -169,32 +356,7 @@ void MC_ReadHeartbeatDecode(uint8_t index, uint8_t mode, uint8_t cmd)
 		motorData[MC_GetMotorNum(index)].motorFault = (smotorFault_e)mcProtocol.canRxData[4];
 	}
 }
-void MC_HeartbeatEncode(uint8_t index)
-{
-	memset(canDataToSend, 0, sizeof(canDataToSend));
-	MC_ProtocolEncode(index, MODE_HEARTBEAT , 0x01 , canDataToSend);
-}
-void MC_FindOnlineMotor(void)
-{
-  mcProtocol.refreshFlag = 1;
-	for(uint8_t i = 0; i<0x05; i++ )
-	{
-		MC_HeartbeatEncode(i);
-		/* connect clean */
-		mcProtocol.connectFlag[i] = 0;
-	}
-}
-uint8_t MC_GetMotorNum(uint8_t index)
-{
-	for(uint8_t i = 0; i<mcProtocol.onlineNum; i++)
-	{
-		if(index ==mcProtocol.connectID[i] )
-		{
-			return i;
-		}
-	}
-	return 0;
-}
+
 void receiveCallback(const can_msgs::Frame::ConstPtr& msg)
 {
   mcProtocol.index = msg->id;
@@ -221,6 +383,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
 
   const char* ifname = "can0"; // CAN接口名，根据实际情况修改
+  int sockfd;
   // 创建套接字
   sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (sockfd == -1) {
@@ -245,7 +408,7 @@ int main(int argc, char** argv)
   }
 
   // 创建CAN消息发布者
-  can_pub = nh.advertise<can_msgs::Frame>("sent_messages", 10);
+  can_pub = nh.advertise<can_msgs::Frame>("sent_messages", 15);
 
   // 创建CAN消息订阅者
   ros::Subscriber can_sub = nh.subscribe("received_messages", 10, receiveCallback);
@@ -255,10 +418,18 @@ int main(int argc, char** argv)
   // 发布和订阅CAN消息
   while (ros::ok())
   {
-    MC_FindOnlineMotor();
     std::cout<< "OnlineMotorNum is:"<<unsigned(MC_GetOnlineMotorNum()) << std::endl;
+    
+    // MC_HeartbeatEncode(1);
+    if(MC_GetOnlineMotorNum() ==0){
+      MC_FindOnlineMotor();
+      // MC_StopMotorEncode(0);
+    }
+    else{
+      MC_StartMotorEncode(0);
+      MC_WritePositionEncode(0, 300, 2000);
+    }
 
-    // 延时一段时间后再发布下一条CAN消息
     ros::Duration(0.1).sleep();
     
     // 处理订阅的消息

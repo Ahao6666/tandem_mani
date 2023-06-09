@@ -36,6 +36,28 @@ typedef enum
 }mcProtocolModeHost_e;
 typedef enum
 {
+	CMD_ID=0x11,
+	CMD_IQ,
+	CMD_SPEED,
+	CMD_POS
+}mcProtocolWrite_e;
+typedef enum
+{
+	REG_ALL = 0,
+	REG_KP,
+	REG_KI,
+	REG_KD,
+	REG_CANINDEX
+}mcProtocolReg_e;
+typedef enum
+{
+	CMD_STARTMOTOR=1,
+	CMD_STOPMOTOR,
+	CMD_CLEANERR,
+	CMD_RUNMODE,
+}mcProtocolCmdWrite_e;
+typedef enum
+{
 	RTORQUE_MODE,
 	RSPEED_MODE,
 	/* 普通位置模式 */
