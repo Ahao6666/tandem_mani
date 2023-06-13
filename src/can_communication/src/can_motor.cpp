@@ -5,6 +5,7 @@ ros::Publisher can_pub;
 uint8_t canDataToSend[6];		 /* 发送数据缓存 */
 mcProtocol_t mcProtocol;
 mcProtocolMotorData_t *motorData = NULL;
+can_communication::MotorPosTar MotorPosTar_msg;
 typedef void (*MC_DataDecode)(uint8_t, uint8_t, uint8_t );
 u2f_u u2f;
 #define  BYTE0(dwTemp)       ( *( (uint8_t *)(&dwTemp)	)  )
@@ -14,17 +15,17 @@ u2f_u u2f;
 /* 解析函数向量表1 */
 static const MC_DataDecode MC_DecodeTalbe1[0X04] =
 {
-	MC_ReadIdDecode,
+  MC_ReadIdDecode,
   MC_ReadIqDecode, 
-	MC_ReadSpeedDecode,
+  MC_ReadSpeedDecode,
   MC_ReadPositionDecode, 
 };
 
 static const MC_DataDecode MC_DecodeTalbe3[0X04] =
 {
-	MC_ReadIdDecode,
+  MC_ReadIdDecode,
   MC_ReadIqDecode, 
-	MC_ReadSpeedDecode,
+  MC_ReadSpeedDecode,
   MC_ReadPositionDecode,
 };
 static void MC_ReadIdDecode(uint8_t num, uint8_t mode ,uint8_t cmd)
@@ -375,7 +376,12 @@ void receiveCallback(const can_msgs::Frame::ConstPtr& msg)
            msg->id, msg->data[0], msg->data[1], msg->data[2], msg->data[3],
            msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
 }
-
+void MotorPosTar_Callback(const can_communication::MotorPosTar& msg)
+{
+	MotorPosTar_msg.num = msg.num;
+	MotorPosTar_msg.pos_tar = msg.pos_tar;
+	MotorPosTar_msg.time_dur = msg.time_dur;
+}
 int main(int argc, char** argv)
 {
   // 初始化ROS节点
@@ -412,7 +418,10 @@ int main(int argc, char** argv)
 
   // 创建CAN消息订阅者
   ros::Subscriber can_sub = nh.subscribe("received_messages", 10, receiveCallback);
-
+  // 接收电机位置参考信息
+  ros::Subscriber MotorPosTar_sub = nh.subscribe("MotorPosTar", 10, MotorPosTar_Callback);
+  MotorPosTar_msg.pos_tar.push_back(0);
+  MotorPosTar_msg.time_dur.push_back(0);
   MC_ProtocolInit();
 
   // 发布和订阅CAN消息
@@ -426,8 +435,10 @@ int main(int argc, char** argv)
       // MC_StopMotorEncode(0);
     }
     else{
-      MC_StartMotorEncode(0);
-      MC_WritePositionEncode(0, 300, 2000);
+		for(int i=0; i<MC_GetOnlineMotorNum(); i++){
+			MC_StartMotorEncode(i);
+			MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);	//需要修改
+		}
     }
 
     ros::Duration(0.1).sleep();
