@@ -3,7 +3,6 @@
 #include "manipulator_IDynamic.h"
 #define pi 3.14159
 
-
 Matrix3d get_Rot(double pitch, double yaw) {
 	Matrix3d R;
 	R << cos(yaw) * cos(pitch), -sin(yaw), 0, cos(pitch)* sin(yaw), cos(yaw), 0, -sin(pitch), 0, 1 ;
@@ -12,7 +11,6 @@ Matrix3d get_Rot(double pitch, double yaw) {
 
 std::vector<float> computeEularAngles(Eigen::Matrix3f& R, bool israd) {
 	std::vector<float> result(3, 0);
-	//const float pi = 3.14159265397932384626433;
 
 	float theta = 0, psi = 0, pfi = 0;
 	if (abs(R(2, 0)) < 1 - FLT_MIN || abs(R(2, 0)) > 1 + FLT_MIN) { // abs(R(2, 0)) != 1
@@ -201,8 +199,6 @@ int main() {
 	
 	
 	for (int i = 1; i < L ; i++) {
-     
-		//
 		dq.col(0) << 5 * pi / 30, 5 * pi / 30, 5 * pi / 30, 5 * pi / 30, 5 * pi / 30;
 		//dq.col(0) << 0,0,0, 5 * pi / 30,0;
 		for (int j = 0; j < 5; j++) {
@@ -212,7 +208,6 @@ int main() {
 			dda[j] = ddq.col(i-1)[j];
 		}
 		
-		//
 		K_model.get_R_t(a);
 		Eigen::Matrix3f Rbd;
 		Rbd.setZero();
@@ -228,7 +223,6 @@ int main() {
 		eulerAngle[0] = result[0] / 180 * pi;//roll
 		eulerAngle[1] = result[1] / 180 * pi;//pitch
 		eulerAngle[2] = result[2] / 180 * pi;//yaw
-
 
 		pos = K_model.T.at(5).block<3, 1>(0, 3);
 		//����ٶȡ�ŷ�����ٶ�ת������
@@ -348,16 +342,9 @@ int main() {
 		state_actual.col(i - 1)[3] = eulerAngle[0];
 		state_actual.col(i - 1)[4] = eulerAngle[1];
 		state_actual.col(i - 1)[5] = eulerAngle[2];
-
-
 		std::cout << state_des.col(i-1)[0] << std::endl;
 		std::cout << state_actual.col(i-1)[0] << std::endl;
-
-		
-
-		
 	}
-
 }
 
 

@@ -32,7 +32,6 @@ link_directories(
 )
 
 add_executable(motor_model src/motor_model.cpp)
-add_dependencies(motor_model my_gazebo_plugin_gencpp)
 target_link_libraries(motor_model 
   ${catkin_LIBRARIES} 
   ${GAZEBO_LIBRARIES}

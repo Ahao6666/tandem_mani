@@ -10,7 +10,6 @@ class Manipulator_IDynamic : public Manipulator_Kinematic {
 
 public:
     Manipulator_IDynamic();
-
     std::vector<double> rnea(std::vector<double> q, std::vector<double> dq, std::vector<double> ddq);
     std::vector<Eigen::Vector3d> f_;        //linear forces applied at the origin of the RF
     std::vector<Eigen::Vector3d> tau_;      //tourques
@@ -29,19 +28,12 @@ private:
     std::vector<Eigen::Vector3d> a_;      //linear acceleration at frame i in frame i
     std::vector<Eigen::Vector3d> ac_;     //linear acceleration of the cog in frame i
 
-
-
     //Eigen::Vector3d u_;                     //tau_ after projection
     std::vector<double> u_;
-
     void initializeMatrices();
-
     void forwardRecursion(std::vector <double> q, std::vector<double> dq, std::vector<double> ddq);
-
     void backwardRecursion(std::vector<double> q);
-
 };
-
 
 
 Manipulator_IDynamic::Manipulator_IDynamic() {
@@ -89,21 +81,15 @@ Manipulator_IDynamic::Manipulator_IDynamic() {
     tau_.resize(DOFS + 1);
 }
 
-
-
 std::vector<double> Manipulator_IDynamic::rnea(std::vector<double> q, std::vector<double> dq, std::vector<double> ddq) {
-
     initializeMatrices();
     forwardRecursion(q, dq, ddq);
     backwardRecursion(q);
     return  u_;
-
 }
 
 //��һ���ĵط��������ơ�����һ����Ҫת��
-
 void Manipulator_IDynamic::forwardRecursion(std::vector<double> q, std::vector<double> dq, std::vector<double> ddq) {
-
     Eigen::Vector3d z;
     z << 0, 0, 1;
 
@@ -116,23 +102,15 @@ void Manipulator_IDynamic::forwardRecursion(std::vector<double> q, std::vector<d
      //std::vector<double> dh_parameters;
      //dh_parameters.resize(4);
     double m;
-
-
     for (short int i = 0; i < DOFS; i++) {
-
         // cog_.at(i) = cog_.at(i) + tp;
         omega_.at(i + 1) = R.at(i).transpose() * omega_.at(i) + dq[i] * z;
-
         d_omega_.at(i + 1) = R.at(i).transpose() * (d_omega_.at(i) + omega_.at(i).cross(dq[i] * z)) + ddq[i] * z;
-
         a_.at(i + 1) = R.at(i).transpose() * (a_.at(i) + d_omega_.at(i).cross(tp) + omega_.at(i).cross(omega_.at(i).cross(tp)));
-
         ac_.at(i) = a_.at(i + 1) + d_omega_.at(i + 1).cross(cog_.at(i)) + omega_.at(i + 1).cross(omega_.at(i + 1).cross(cog_.at(i)));
         //std::cout << R.transpose().eval() << std::endl;
         tp = t.at(i);
-
     }
-
 }
 
 
@@ -140,12 +118,9 @@ void  Manipulator_IDynamic::backwardRecursion(std::vector<double> q) {
 
     Eigen::Vector3d g;
     g << 0, 0, 9.81;
-
     Eigen::Vector3d z;
     z << 0, 0, 1;
-
     Eigen::Matrix3d Rp1;
-
     Rp1 << 1, 0, 0,
         0, 1, 0,
         0, 0, 1;
@@ -153,29 +128,19 @@ void  Manipulator_IDynamic::backwardRecursion(std::vector<double> q) {
     // Eigen::Vector3d p;
 
     // std::vector<double> dh_parameters;
-     //dh_parameters.resize(4);
-     //double m;
-     //the first transfomation is identity because it transfom
-     //from the tip to the environment so it remain like it is
-     //Rp1 << 1, 0, 0, 0, 1, 0,  0, 0, 1;
-
-
+    //dh_parameters.resize(4);
+    //double m;
+    //the first transfomation is identity because it transfom
+    //from the tip to the environment so it remain like it is
+    //Rp1 << 1, 0, 0, 0, 1, 0,  0, 0, 1;
     for (short int i = DOFS - 1; i >= 0; i--) {
         //cog_.at(i) = cog_.at(i) + t.at(i);
-
         f_.at(i) = Rp1 * f_.at(i + 1) + m_[i] * (ac_.at(i));
-
         tau_.at(i) = Rp1 * tau_.at(i + 1) + t.at(i).cross(Rp1 * f_.at(i + 1)) + cog_.at(i).cross(m_[i] * ac_.at(i)) +
             inertiaTensor.at(i) * (d_omega_.at(i + 1)) + omega_.at(i + 1).cross(inertiaTensor.at(i) * (omega_.at(i + 1)));
-
         u_[i] = tau_.at(i).transpose() * z;//�ؽ�Ť�أ�ΪʲôҪ���һ��RT
-
         Rp1 = R.at(i);
-
-
-
     }
-
 }
 
 void  Manipulator_IDynamic::initializeMatrices() {

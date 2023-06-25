@@ -8,7 +8,10 @@ find_package(catkin REQUIRED COMPONENTS
   socketcan_interface
   message_generation
 )
-add_message_files(FILES MotorPosTar.msg)
+add_message_files(
+  FILES 
+  MotorPosTar.msg
+)
 
 generate_messages(
   DEPENDENCIES 

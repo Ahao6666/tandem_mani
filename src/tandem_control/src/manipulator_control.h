@@ -8,7 +8,10 @@
 using namespace Eigen;
 class manipulator {
 public:
-	std::vector<double> PID_control(std::vector<double> q, std::vector<double> dq, std::vector<double> ddq, std::vector<double> q_des, std::vector<double> dq_des, std::vector<double> ddq_des, std::vector<double> tau_dynamic);
+	std::vector<double> PID_control(std::vector<double> q, 
+		std::vector<double> dq, std::vector<double> ddq, 
+		std::vector<double> q_des, std::vector<double> dq_des, 
+		std::vector<double> ddq_des, std::vector<double> tau_dynamic);
 	manipulator();
 private:
 
@@ -39,14 +42,17 @@ manipulator::manipulator() {
 	//ki = { 0.15, 0.015, 0.015, 0.015, 0.015 };
 	
 	//t=0.05
-		//kp = { 1.4, 1.4, 1.4, 1.4, 1.4 };
-		//kd = { 0.15, 0.15, 0.15, 0.15, 0.15 };
+	//kp = { 1.4, 1.4, 1.4, 1.4, 1.4 };
+	//kd = { 0.15, 0.15, 0.15, 0.15, 0.15 };
 	kp = { 14, 14, 14, 14, 14 };
 	kd = { 0.01, 0.01, 0.01, 0.01, 0.01 };
 	//ki = { 0.15, 0.015, 0.015, 0.015, 0.015 };
 }
-std::vector<double> manipulator::PID_control(std::vector<double> q, std::vector<double> dq, std::vector<double> ddq, std::vector<double> q_des, std::vector<double> dq_des, std::vector<double> ddq_des, std::vector<double> tau_dynamic) {
-
+std::vector<double> manipulator::PID_control(std::vector<double> q, 
+		std::vector<double> dq, std::vector<double> ddq, 
+		std::vector<double> q_des, std::vector<double> dq_des, 
+		std::vector<double> ddq_des, std::vector<double> tau_dynamic) 
+	{
 	for (int i = 0; i < 5; i++) {
 		eq[i] = q[i] - q_des[i];//(5x1)
 		edq[i] = dq[i] - dq_des[i];
@@ -54,7 +60,6 @@ std::vector<double> manipulator::PID_control(std::vector<double> q, std::vector<
 		tau_PID[i] = -kp[i] * eq[i] - kd[i] * edq[i];
 		//torque[i] = tau_PID[i];
 		torque[i] = tau_PID[i] + tau_dynamic[i];
-
 	}
 	return torque;
 }

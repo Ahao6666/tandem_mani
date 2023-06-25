@@ -437,7 +437,7 @@ int main(int argc, char** argv)
     else{
 		for(int i=0; i<MC_GetOnlineMotorNum(); i++){
 			MC_StartMotorEncode(i);
-			MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);	//需要修改
+			MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
 		}
     }
 

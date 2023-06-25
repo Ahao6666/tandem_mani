@@ -6,7 +6,6 @@
 #include <Eigen/StdVector>
 using namespace Eigen;
 
-
 class Manipulator_Kinematic {
 public:
 	void get_jacobain(VectorXd q);
@@ -88,7 +87,6 @@ Manipulator_Kinematic::Manipulator_Kinematic() {
 	t.resize(5);
 	B.resize(5);
 
-
 	for (int i = 0; i < 5; i++)
 	{
 		R.at(i).setZero();
@@ -131,8 +129,7 @@ void Manipulator_Kinematic::get_jacobain(VectorXd q) {
 }
 
 void Manipulator_Kinematic::get_R_t(VectorXd q) {
-
-q.resize(5);
+	q.resize(5);
 	for (int i = 0; i < 5; i++)
 	{
 		N = S.at(i) * q[i];
@@ -156,7 +153,6 @@ q.resize(5);
 		R.at(i) = computeR(T.at(i), R.at(i));
 		t.at(i) = computet(T.at(i), t.at(i));
 	}
-
 }
 
 Eigen::Matrix3d Manipulator_Kinematic::computeR(Matrix4d Tb, Eigen::Matrix3d R) {

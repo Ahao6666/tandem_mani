@@ -19,10 +19,9 @@
 #include <gazebo_msgs/GetJointProperties.h>
 #include <gazebo_msgs/GetLinkState.h>
 #include <std_msgs/Float64.h>
-
 #include "manipulator_kinematic.h"
 
-//compute Euler angles by R,定义在前面，定义在后面会报错
+//compute Euler angles by R
 Vector3d computeEulerAngles(Matrix3d R) {
 	double theta = 0, psi = 0, pfi = 0;
 	if (abs(R(2, 0)) < 1 - FLT_MIN || abs(R(2, 0)) > 1 + FLT_MIN) { // abs(R(2, 0)) != 1
@@ -54,7 +53,7 @@ Vector3d computeEulerAngles(Matrix3d R) {
 	EulerAngles[2] = pfi;
 	return EulerAngles;
 }
-
+// Plan the End Effector position and velocity
 void planEEPoseAndVel(Manipulator_Kinematic K_model,VectorXd &desiredEEPose,VectorXd &desiredEEVel){
 	double currentTime=ros::Time::now().toSec();
 	VectorXd jointAngle(5);
@@ -66,7 +65,7 @@ void planEEPoseAndVel(Manipulator_Kinematic K_model,VectorXd &desiredEEPose,Vect
 		jointAngleVel[j]=5 * cos(currentTime) * M_PI / 30;
 		// jointAngle[j]= 1;
 		// jointAngleVel[j]=0;
-		}
+	}
 	//compute desired EE's pose
 	K_model.get_R_t(jointAngle);
 	Matrix3d EERotationMatrix;
@@ -86,7 +85,7 @@ void planEEPoseAndVel(Manipulator_Kinematic K_model,VectorXd &desiredEEPose,Vect
 	desiredEEVel=jacobian*jointAngleVel;
 }
 
-void getEEPose(Manipulator_Kinematic K_model,VectorXd current_jnts,VectorXd &EEPose){
+void getEEPose(Manipulator_Kinematic K_model, VectorXd current_jnts, VectorXd &EEPose){
 	//compute EE's pose
 	current_jnts.resize(5);
 	K_model.get_R_t(current_jnts);
@@ -127,26 +126,39 @@ int main(int argc, char** argv) {
 	std::string jointNames[]={"joint1","joint2","joint3","joint4","joint5"};
 	//initialize command publishers for each joints，先advertise一下,再publish一下
 	for(int j=0; j < 5; j++){
-			cmd_jnts_pos_publisher[j] = nh.advertise<std_msgs::Float64>( 
-			jointNames[j] + "_cmd_jnts_pos", 1, true);
+		cmd_jnts_pos_publisher[j] = nh.advertise<std_msgs::Float64>( 
+		jointNames[j] + "_cmd_jnts_pos", 1, true);
 	}
+
+	VectorXd current_jnts(5);
+	VectorXd EEPose_gz(3);
+	VectorXd EEPose(5);
+	VectorXd desiredEEPose(5); 
+	VectorXd desiredEEVel(5);
+	VectorXd poseError(5);
+	VectorXd EEVel(5);
+	MatrixXd jacobian(5,5);
+	MatrixXd pseudoInverseJacbian(5,5);
+	VectorXd desiredJointsVel(5);
+	VectorXd desiredJoints(5);
+	double kp = 1;
+	double epsilon = 1 / M_PI;
+	double lambda_max = 0.001;
+	double lambda;
+	double sigma;
 
 	double dt=0.01;
     ros::Rate rate_timer(1 / dt);
 
-    VectorXd current_jnts(5);
     while(ros::ok()) {
-
 		//call for current joints
 		for (int i=0; i<5; i++) {
 			get_joint_state_srv_msg.request.joint_name = jointNames[i];
 			get_jnt_state_client.call(get_joint_state_srv_msg);
 			current_jnts[i] = get_joint_state_srv_msg.response.position[0];
-			// ROS_INFO("%s = %f",jointNames[i].c_str(), get_joint_state_srv_msg.response.position[0]);
 		}
 
 		//call for current EE pose
-		VectorXd EEPose_gz(3);
 		get_link_state_srv_msg.request.link_name = "link5";
 		//get_link_state_srv_msg.request.reference_frame = "wrold";
 		get_link_state_client.call(get_link_state_srv_msg);
@@ -156,41 +168,31 @@ int main(int argc, char** argv) {
 		ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
 
 		//secondly,compute EE pose
-		VectorXd EEPose(5);
-		getEEPose(K_model,current_jnts,EEPose);
-		ROS_INFO("EEpose %f, %f, %f",EEPose[0],EEPose[1],EEPose[2]);
+		getEEPose(K_model, current_jnts, EEPose);
+		ROS_INFO("EEpose %f, %f, %f", EEPose[0], EEPose[1], EEPose[2]);
 
 		//thirdly,compute desired EE pose and vel
-		VectorXd desiredEEPose(5); VectorXd desiredEEVel(5);
 		planEEPoseAndVel(K_model,desiredEEPose,desiredEEVel);
 
 		//ClIK method 
-		VectorXd poseError(5);VectorXd EEVel(5); double kp=1;
-		poseError=desiredEEPose-EEPose;
-		EEVel=desiredEEVel+kp*poseError;
+		poseError = desiredEEPose - EEPose;
+		EEVel = desiredEEVel + kp*poseError;
 
 		//DLS
 		K_model.get_jacobain(current_jnts);
-		MatrixXd jacobian(5,5);
-		jacobian=K_model.jacob.block<5, 5>(0, 0);
+
+		jacobian = K_model.jacob.block<5, 5>(0, 0);
 		JacobiSVD<MatrixXd> svd(jacobian, ComputeThinU | ComputeThinV);
-		double sigma= svd.singularValues()[4];// 第五个特征值
-		double epsilon= 1 / M_PI;
-		double lambda_max = 0.001;
-		double lambda;
+		sigma = svd.singularValues()[4];// 第五个特征值
+
 		if (sigma >= epsilon)
-		{
 			lambda = 0;
-		}
 		else
-		{
-           lambda = lambda_max*(1-sigma / epsilon);
-		}
+           lambda = lambda_max * (1 - sigma / epsilon);
 		
-		MatrixXd pseudoInverseJacbian(5,5);VectorXd desiredJointsVel(5);VectorXd desiredJoints(5);
-		pseudoInverseJacbian = jacobian.transpose() *(jacobian * jacobian.transpose()+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
-		desiredJointsVel=pseudoInverseJacbian * EEVel;
-		desiredJoints=current_jnts+desiredJointsVel*dt;
+		pseudoInverseJacbian = jacobian.transpose() * (jacobian * jacobian.transpose()+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
+		desiredJointsVel = pseudoInverseJacbian * EEVel;
+		desiredJoints = current_jnts + desiredJointsVel * dt;
 
 		for(int j=0; j < 5; j++){
 			std_msgs::Float64 cmd_jnts_pos_msg;
