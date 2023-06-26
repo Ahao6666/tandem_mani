@@ -31,8 +31,6 @@ private:
 	ros::ServiceClient set_trq_client;
 	// publisher objects
 	ros::Publisher trq_publisher;
-	ros::Publisher vel_publisher;
-	ros::Publisher pos_publisher;
 	ros::Publisher joint_state_publisher;
 	// subscriber object
 	ros::Subscriber pos_cmd_subscriber;
@@ -41,8 +39,6 @@ private:
 	gazebo_msgs::ApplyJointEffort effort_cmd_srv_msg;
 	sensor_msgs::JointState joint_state_msg;
 	// position/velocity/torque messages to be published
-	std_msgs::Float64 pos_msg; // position
-	std_msgs::Float64 vel_msg; // velocity
 	std_msgs::Float64 trq_msg; // torque
 
 	// control parameters
@@ -71,8 +67,6 @@ Joint::Joint(ros::NodeHandle nh, std::string joint_name, double dt) {
 	get_jnt_state_client = nh.serviceClient<gazebo_msgs::GetJointProperties>("/gazebo/get_joint_properties");
 	set_trq_client = nh.serviceClient<gazebo_msgs::ApplyJointEffort>("/gazebo/apply_joint_effort");
 	// initialize publisher objects
-	pos_publisher = nh.advertise<std_msgs::Float64>(joint_name + "_pos", 1);
-	vel_publisher = nh.advertise<std_msgs::Float64>(joint_name + "_vel", 1);
 	trq_publisher = nh.advertise<std_msgs::Float64>(joint_name + "_trq", 1);
 	joint_state_publisher = nh.advertise<sensor_msgs::JointState>(joint_name + "_states", 1); 
 	// initialize subscriber object
@@ -102,14 +96,8 @@ void Joint::posCmdCB(const std_msgs::Float64& pos_cmd_msg) {
 void Joint::getJointState() {
 	// get joint state
 	get_jnt_state_client.call(get_joint_state_srv_msg);
-	// publish joint position
 	pos_cur = get_joint_state_srv_msg.response.position[0];
-	pos_msg.data = pos_cur;
-	pos_publisher.publish(pos_msg);
-	// publish joint velocity
 	vel_cur = get_joint_state_srv_msg.response.rate[0];
-	vel_msg.data = vel_cur;
-	vel_publisher.publish(vel_msg);
 	// publish joint_state_msg
 	joint_state_msg.header.stamp = ros::Time::now();
 	joint_state_msg.position[0] = pos_cur;

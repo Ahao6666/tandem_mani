@@ -1,7 +1,7 @@
 # minimal_robot_gripper
  - `catkin build` for make
 
-To get program running, first compile it using catkin_make in your ros workspace. Then running these scripts in seperate terminals:
+To get program running, first compile it using `catkin_make` in your ros workspace. Then running these scripts in seperate terminals:
 
   - `roscore`  
   - `rosrun gazebo_ros gazebo`  

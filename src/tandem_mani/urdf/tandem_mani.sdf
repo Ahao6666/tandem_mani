@@ -23,16 +23,18 @@
       <self_collide>1</self_collide>
       <collision name='platform_collision'>
         <geometry>
-          <box>
-            <size>0.3 0.3 0.1</size>
-          </box>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.1</length>
+          </cylinder>
         </geometry>
       </collision>
       <visual name='platform_visual'>
         <geometry>
-          <box>
-            <size>0.3 0.3 0.1</size>
-          </box>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.1</length>
+          </cylinder>
         </geometry>
       </visual>
     </link>
