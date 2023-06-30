@@ -11,6 +11,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include "can_communication/MotorPosTar.h"
+#include "can_communication/MotorModeSet.h"
 
 #define PBUF_SIZE	9 * 0x100
 #define HEARTBEAT 	0x01

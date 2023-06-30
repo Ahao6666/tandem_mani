@@ -6,6 +6,7 @@ uint8_t canDataToSend[6];		 /* 发送数据缓存 */
 mcProtocol_t mcProtocol;
 mcProtocolMotorData_t *motorData = NULL;
 can_communication::MotorPosTar MotorPosTar_msg;
+uint8_t Motor_mode;
 typedef void (*MC_DataDecode)(uint8_t, uint8_t, uint8_t );
 u2f_u u2f;
 #define  BYTE0(dwTemp)       ( *( (uint8_t *)(&dwTemp)	)  )
@@ -15,18 +16,18 @@ u2f_u u2f;
 /* 解析函数向量表1 */
 static const MC_DataDecode MC_DecodeTalbe1[0X04] =
 {
-  MC_ReadIdDecode,
-  MC_ReadIqDecode, 
-  MC_ReadSpeedDecode,
-  MC_ReadPositionDecode, 
+    MC_ReadIdDecode,
+    MC_ReadIqDecode, 
+    MC_ReadSpeedDecode,
+    MC_ReadPositionDecode, 
 };
 
 static const MC_DataDecode MC_DecodeTalbe3[0X04] =
 {
-  MC_ReadIdDecode,
-  MC_ReadIqDecode, 
-  MC_ReadSpeedDecode,
-  MC_ReadPositionDecode,
+    MC_ReadIdDecode,
+    MC_ReadIqDecode, 
+    MC_ReadSpeedDecode,
+    MC_ReadPositionDecode,
 };
 static void MC_ReadIdDecode(uint8_t num, uint8_t mode ,uint8_t cmd)
 {
@@ -238,23 +239,23 @@ void MC_ProtocolReturn(uint8_t index, uint8_t mode, uint8_t cmd, uint8_t flag)
 }
 void MC_ProtocolEncode(uint8_t index, uint8_t mode, uint8_t cmd, uint8_t* buf)
 {
-  // 创建一个CAN帧
-  frame_send.header.frame_id = "can_frame";
-  frame_send.header.stamp = ros::Time::now();
-  frame_send.is_extended = false;
-  frame_send.is_error = false;
-  frame_send.dlc = 8;  // 设置数据长度
-  frame_send.id = index;  // 设置CAN帧的ID
-  // 设置CAN帧的数据
-  frame_send.data[0] = mode;
-  frame_send.data[1] = cmd;
-  frame_send.data[2] = buf[0];
-  frame_send.data[3] = buf[1];
-  frame_send.data[4] = buf[2];
-  frame_send.data[5] = buf[3];
-  frame_send.data[6] = buf[4];
-  frame_send.data[7] = buf[5];
-  can_pub.publish(frame_send);
+    // 创建一个CAN帧
+    frame_send.header.frame_id = "can_frame";
+    frame_send.header.stamp = ros::Time::now();
+    frame_send.is_extended = false;
+    frame_send.is_error = false;
+    frame_send.dlc = 8;  // 设置数据长度
+    frame_send.id = index;  // 设置CAN帧的ID
+    // 设置CAN帧的数据
+    frame_send.data[0] = mode;
+    frame_send.data[1] = cmd;
+    frame_send.data[2] = buf[0];
+    frame_send.data[3] = buf[1];
+    frame_send.data[4] = buf[2];
+    frame_send.data[5] = buf[3];
+    frame_send.data[6] = buf[4];
+    frame_send.data[7] = buf[5];
+    can_pub.publish(frame_send);
 }
 
 void MC_ProtocolInit(void)
@@ -272,8 +273,8 @@ void MC_ProtocolInit(void)
 void MC_ProtocolDecode(void)
 {
 	uint8_t connectNum = 0;
-  switch (mcProtocol.canRxData[0])
-  {
+    switch (mcProtocol.canRxData[0])
+    {
     case HEARTBEAT:
       MC_ReadHeartbeatDecode(mcProtocol.index,mcProtocol.canRxData[0],mcProtocol.canRxData[1]);
       break;
@@ -294,7 +295,7 @@ void MC_ProtocolDecode(void)
       break;
     default:
       break;
-  }
+    }
 	if(mcProtocol.refreshFlag == 1)
 	{
 		mcProtocol.tick++;
@@ -361,26 +362,26 @@ void MC_ReadHeartbeatDecode(uint8_t index, uint8_t mode, uint8_t cmd)
 void Heartbeat_Callback(const ros::TimerEvent& e){
   if(MC_GetOnlineMotorNum() != 0)
     for(int i=0; i<MC_GetOnlineMotorNum(); i++){
-      MC_HeartbeatEncode(i);
+        MC_HeartbeatEncode(i);
     }
 }
-void receiveCallback(const can_msgs::Frame::ConstPtr& msg)
+void receive_Callback(const can_msgs::Frame::ConstPtr& msg)
 {
-  mcProtocol.index = msg->id;
-  mcProtocol.canRxData[0] = msg->data[0];
-  mcProtocol.canRxData[1] = msg->data[1];
-  mcProtocol.canRxData[2] = msg->data[2];
-  mcProtocol.canRxData[3] = msg->data[3];
-  mcProtocol.canRxData[4] = msg->data[4];
-  mcProtocol.canRxData[5] = msg->data[5];
-  mcProtocol.canRxData[6] = msg->data[6];
-  mcProtocol.canRxData[7] = msg->data[7];
+    mcProtocol.index = msg->id;
+    mcProtocol.canRxData[0] = msg->data[0];
+    mcProtocol.canRxData[1] = msg->data[1];
+    mcProtocol.canRxData[2] = msg->data[2];
+    mcProtocol.canRxData[3] = msg->data[3];
+    mcProtocol.canRxData[4] = msg->data[4];
+    mcProtocol.canRxData[5] = msg->data[5];
+    mcProtocol.canRxData[6] = msg->data[6];
+    mcProtocol.canRxData[7] = msg->data[7];
 
-  MC_ProtocolDecode();
-  // 处理接收到的CAN帧数据
-  // ROS_INFO("Received CAN frame - ID: 0x%02X, Data: %02X %02X %02X %02X %02X %02X %02X %02X",
-  //          msg->id, msg->data[0], msg->data[1], msg->data[2], msg->data[3],
-  //          msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
+    MC_ProtocolDecode();
+    // 处理接收到的CAN帧数据
+    // ROS_INFO("Received CAN frame - ID: 0x%02X, Data: %02X %02X %02X %02X %02X %02X %02X %02X",
+    //          msg->id, msg->data[0], msg->data[1], msg->data[2], msg->data[3],
+    //          msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
 }
 void MotorPosTar_Callback(const can_communication::MotorPosTar& msg)
 {
@@ -388,66 +389,98 @@ void MotorPosTar_Callback(const can_communication::MotorPosTar& msg)
 	MotorPosTar_msg.pos_tar = msg.pos_tar;
 	MotorPosTar_msg.time_dur = msg.time_dur;
 }
+
+//mode set服务的回调函数
+bool MotorModeSet_Callback(can_communication::MotorModeSet::Request  &req,
+        can_communication::MotorModeSet::Response &res)
+{
+    Motor_mode = req.mode;
+    std::cout<<"MotorModeSet_Callback"<<unsigned(Motor_mode)<<std::endl;
+	// switch running Motor_mode
+	for(int i=0; i<MC_GetOnlineMotorNum(); i++){
+		MC_SetMotorModeEncode(i , Motor_mode);
+	}
+    res.success = true;
+    return true;
+}
+
 int main(int argc, char** argv)
 {
-  // 初始化ROS节点
-  ros::init(argc, argv, "can_motor_node");
-  ros::NodeHandle nh;
+    // 初始化ROS节点
+    ros::init(argc, argv, "can_motor_node");
+    ros::NodeHandle nh;
 
-  const char* ifname = "can0"; // CAN接口名，根据实际情况修改
-  int sockfd;
-  // 创建套接字
-  sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-  if (sockfd == -1) {
-      std::cerr << "Failed to create socket." << std::endl;
-      return 1;
-  }
-  // 绑定到CAN接口
-  struct ifreq ifr;
-  std::strcpy(ifr.ifr_name, ifname);
-  if (ioctl(sockfd, SIOCGIFINDEX, &ifr) == -1) {
-      std::cerr << "Failed to get interface index." << std::endl;
-      close(sockfd);
-      return 1;
-  }
-  struct sockaddr_can addr;
-  addr.can_family = AF_CAN;
-  addr.can_ifindex = ifr.ifr_ifindex;
-  if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-      std::cerr << "Failed to bind socket to interface." << std::endl;
-      close(sockfd);
-      return 1;
-  }
+    const char* ifname = "can0"; // CAN接口名，根据实际情况修改
+    int sockfd;
+    // 创建套接字
+    sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (sockfd == -1) {
+        std::cerr << "Failed to create socket." << std::endl;
+        return 1;
+    }
+    // 绑定到CAN接口
+    struct ifreq ifr;
+    std::strcpy(ifr.ifr_name, ifname);
+    if (ioctl(sockfd, SIOCGIFINDEX, &ifr) == -1) {
+        std::cerr << "Failed to get interface index." << std::endl;
+        close(sockfd);
+        return 1;
+    }
+    struct sockaddr_can addr;
+    addr.can_family = AF_CAN;
+    addr.can_ifindex = ifr.ifr_ifindex;
+    if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+        std::cerr << "Failed to bind socket to interface." << std::endl;
+        close(sockfd);
+        return 1;
+    }
 
-  // 创建CAN消息发布者
-  can_pub = nh.advertise<can_msgs::Frame>("sent_messages", 15);
+    // 创建CAN消息发布者
+    can_pub = nh.advertise<can_msgs::Frame>("sent_messages", 15);
 
-  // 创建ros 定时器
-  ros::Timer Heartbeat_timer = nh.createTimer(ros::Duration(0.2), Heartbeat_Callback);   //100Hz
+    // 【定时器】创建ros定时器
+    ros::Timer Heartbeat_timer = nh.createTimer(ros::Duration(0.2), Heartbeat_Callback);   //100Hz
+    // 【消息】订阅CAN回传消息
+    ros::Subscriber can_sub = nh.subscribe("received_messages", 10, receive_Callback);
+    // 【消息】订阅电机位置参考信息
+    ros::Subscriber MotorPosTar_sub = nh.subscribe("MotorPosTar", 10, MotorPosTar_Callback);
+    // 【服务】
+	ros::ServiceServer service = nh.advertiseService("Motor_mode_set", MotorModeSet_Callback);
 
-  // 创建CAN消息订阅者
-  ros::Subscriber can_sub = nh.subscribe("received_messages", 10, receiveCallback);
-  // 接收电机位置参考信息
-  ros::Subscriber MotorPosTar_sub = nh.subscribe("MotorPosTar", 10, MotorPosTar_Callback);
-  MotorPosTar_msg.pos_tar = {0, 0, 0, 0, 0};
-  MotorPosTar_msg.time_dur = {0, 100, 100, 100, 100};
-  MC_ProtocolInit();
+    MotorPosTar_msg.pos_tar = {0, 0, 0, 0, 0};
+    MotorPosTar_msg.time_dur = {0, 0, 0, 0, 0};
+    Motor_mode = RPOSITION_MODE;
+    MC_ProtocolInit();
 
-  // 发布和订阅CAN消息
-  while (ros::ok())
-  {
+    // 发布和订阅CAN消息
+    while (ros::ok())
+    {
     std::cout<< "OnlineMotorNum is:"<<unsigned(MC_GetOnlineMotorNum()) << std::endl;
     
     if(MC_GetOnlineMotorNum() == 0){
-      MC_FindOnlineMotor();
-      // MC_StopMotorEncode(0);
+		MC_FindOnlineMotor();
+		// MC_StopMotorEncode(0);
     }
     else{
       for(int i=0; i<MC_GetOnlineMotorNum(); i++){
         // If the motor is idle, then start
         if(!motorData[MC_GetMotorNum(i)].smotorState)
-          MC_StartMotorEncode(i);
-        MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
+          	MC_StartMotorEncode(i);
+		switch (Motor_mode) {
+			case RTORQUE_MODE:
+				break;
+			case RSPEED_MODE :/*  速度模式 */
+                MC_WriteSpeedEncode(i, 200, 10000);
+				break;
+			case RPOSITION_MODE :/* 普通位置模式 */
+                MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
+				break;
+			case RPOSITION_MODE_T :/* 线性插帧模式 */
+                
+				break;
+			default :
+				std::cout<< "Mode set error!"<< std::endl;
+		}			
       }
     }
 
