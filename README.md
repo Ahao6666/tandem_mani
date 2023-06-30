@@ -14,5 +14,5 @@ or you can run `.start.sh` or `roslaunch start.launch` directly
 
   - `rosrun tandem_control floating_platform` to move the platform  
 
-note: 
-  1. need to modify the $relative path to absolute path$ in sdf file
+# note: 
+  1. need to **modify the relative path to absolute path** in sdf file

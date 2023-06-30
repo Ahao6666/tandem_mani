@@ -358,6 +358,12 @@ void MC_ReadHeartbeatDecode(uint8_t index, uint8_t mode, uint8_t cmd)
 	}
 }
 
+void Heartbeat_Callback(const ros::TimerEvent& e){
+  if(MC_GetOnlineMotorNum() != 0)
+    for(int i=0; i<MC_GetOnlineMotorNum(); i++){
+      MC_HeartbeatEncode(i);
+    }
+}
 void receiveCallback(const can_msgs::Frame::ConstPtr& msg)
 {
   mcProtocol.index = msg->id;
@@ -372,9 +378,9 @@ void receiveCallback(const can_msgs::Frame::ConstPtr& msg)
 
   MC_ProtocolDecode();
   // 处理接收到的CAN帧数据
-  ROS_INFO("Received CAN frame - ID: 0x%03X, Data: %02X %02X %02X %02X %02X %02X %02X %02X",
-           msg->id, msg->data[0], msg->data[1], msg->data[2], msg->data[3],
-           msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
+  // ROS_INFO("Received CAN frame - ID: 0x%02X, Data: %02X %02X %02X %02X %02X %02X %02X %02X",
+  //          msg->id, msg->data[0], msg->data[1], msg->data[2], msg->data[3],
+  //          msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
 }
 void MotorPosTar_Callback(const can_communication::MotorPosTar& msg)
 {
@@ -416,12 +422,15 @@ int main(int argc, char** argv)
   // 创建CAN消息发布者
   can_pub = nh.advertise<can_msgs::Frame>("sent_messages", 15);
 
+  // 创建ros 定时器
+  ros::Timer Heartbeat_timer = nh.createTimer(ros::Duration(0.2), Heartbeat_Callback);   //100Hz
+
   // 创建CAN消息订阅者
   ros::Subscriber can_sub = nh.subscribe("received_messages", 10, receiveCallback);
   // 接收电机位置参考信息
   ros::Subscriber MotorPosTar_sub = nh.subscribe("MotorPosTar", 10, MotorPosTar_Callback);
-  MotorPosTar_msg.pos_tar.push_back(0);
-  MotorPosTar_msg.time_dur.push_back(0);
+  MotorPosTar_msg.pos_tar = {0, 0, 0, 0, 0};
+  MotorPosTar_msg.time_dur = {0, 100, 100, 100, 100};
   MC_ProtocolInit();
 
   // 发布和订阅CAN消息
@@ -429,16 +438,17 @@ int main(int argc, char** argv)
   {
     std::cout<< "OnlineMotorNum is:"<<unsigned(MC_GetOnlineMotorNum()) << std::endl;
     
-    // MC_HeartbeatEncode(1);
-    if(MC_GetOnlineMotorNum() ==0){
+    if(MC_GetOnlineMotorNum() == 0){
       MC_FindOnlineMotor();
       // MC_StopMotorEncode(0);
     }
     else{
-		for(int i=0; i<MC_GetOnlineMotorNum(); i++){
-			MC_StartMotorEncode(i);
-			MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
-		}
+      for(int i=0; i<MC_GetOnlineMotorNum(); i++){
+        // If the motor is idle, then start
+        if(!motorData[MC_GetMotorNum(i)].smotorState)
+          MC_StartMotorEncode(i);
+        MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
+      }
     }
 
     ros::Duration(0.1).sleep();
