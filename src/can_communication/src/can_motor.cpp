@@ -6,6 +6,7 @@ uint8_t canDataToSend[6];		 /* 发送数据缓存 */
 mcProtocol_t mcProtocol;
 mcProtocolMotorData_t *motorData = NULL;
 can_communication::MotorPosTar MotorPosTar_msg;
+can_communication::MotorSpdTar MotorSpdTar_msg;
 uint8_t Motor_mode;
 typedef void (*MC_DataDecode)(uint8_t, uint8_t, uint8_t );
 u2f_u u2f;
@@ -385,11 +386,17 @@ void receive_Callback(const can_msgs::Frame::ConstPtr& msg)
 }
 void MotorPosTar_Callback(const can_communication::MotorPosTar& msg)
 {
+	std::cout<<"get pos tar"<<std::endl;
 	MotorPosTar_msg.num = msg.num;
 	MotorPosTar_msg.pos_tar = msg.pos_tar;
 	MotorPosTar_msg.time_dur = msg.time_dur;
 }
-
+void MotorSpdTar_Callback(const can_communication::MotorSpdTar& msg)
+{
+	MotorSpdTar_msg.num = msg.num;
+	MotorSpdTar_msg.spd_tar = msg.spd_tar;
+	MotorSpdTar_msg.time_dur = msg.time_dur;
+}
 //mode set服务的回调函数
 bool MotorModeSet_Callback(can_communication::MotorModeSet::Request  &req,
         can_communication::MotorModeSet::Response &res)
@@ -441,14 +448,18 @@ int main(int argc, char** argv)
     // 【定时器】创建ros定时器
     ros::Timer Heartbeat_timer = nh.createTimer(ros::Duration(0.2), Heartbeat_Callback);   //100Hz
     // 【消息】订阅CAN回传消息
-    ros::Subscriber can_sub = nh.subscribe("received_messages", 10, receive_Callback);
+    ros::Subscriber can_sub = nh.subscribe("/received_messages", 10, receive_Callback);
     // 【消息】订阅电机位置参考信息
-    ros::Subscriber MotorPosTar_sub = nh.subscribe("MotorPosTar", 10, MotorPosTar_Callback);
-    // 【服务】
+    ros::Subscriber MotorPosTar_sub = nh.subscribe("/MotorPosTar", 10, MotorPosTar_Callback);
+    // 【消息】订阅电机速度参考信息
+    ros::Subscriber MotorSpdTar_sub = nh.subscribe("/MotorSpdTar", 10, MotorSpdTar_Callback);
+    // 【服务】电机模式切换服务
 	ros::ServiceServer service = nh.advertiseService("Motor_mode_set", MotorModeSet_Callback);
 
     MotorPosTar_msg.pos_tar = {0, 0, 0, 0, 0};
-    MotorPosTar_msg.time_dur = {0, 0, 0, 0, 0};
+    MotorPosTar_msg.time_dur = {1000, 0, 0, 0, 0};
+    MotorSpdTar_msg.spd_tar = {0, 0, 0, 0, 0};
+    MotorSpdTar_msg.time_dur = {0, 0, 0, 0, 0};
     Motor_mode = RPOSITION_MODE;
     MC_ProtocolInit();
 
@@ -470,21 +481,23 @@ int main(int argc, char** argv)
 			case RTORQUE_MODE:
 				break;
 			case RSPEED_MODE :/*  速度模式 */
-                MC_WriteSpeedEncode(i, 200, 10000);
+				std::cout<< "RSPEED_MODE"<< std::endl;
+                MC_WriteSpeedEncode(i, MotorSpdTar_msg.spd_tar[i], MotorSpdTar_msg.time_dur[i]);
 				break;
 			case RPOSITION_MODE :/* 普通位置模式 */
+				std::cout<< "RPOSITION_MODE"<< std::endl;
                 MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
 				break;
 			case RPOSITION_MODE_T :/* 线性插帧模式 */
-                
+				std::cout<< "RPOSITION_MODE_T"<< std::endl;
 				break;
 			default :
 				std::cout<< "Mode set error!"<< std::endl;
-		}			
+		}
       }
     }
 
-    ros::Duration(0.1).sleep();
+    ros::Duration(0.01).sleep();
     
     // 处理订阅的消息
     ros::spinOnce();

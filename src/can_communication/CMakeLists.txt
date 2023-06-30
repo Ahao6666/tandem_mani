@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES 
   MotorPosTar.msg
+  MotorSpdTar.msg
 )
 add_service_files(
 	FILES
@@ -31,12 +32,14 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 # add_executable(can_node src/can_node.cpp)
 add_executable(can_motor src/can_motor.cpp)
-add_executable(motor_MS src/motor_MS.c)
+add_executable(Motor_MS src/Motor_MS.c)
 add_executable(Motor_Pos_Tar src/Motor_Pos_Tar.cpp)
+add_executable(Motor_Spd_Tar src/Motor_Spd_Tar.cpp)
 add_executable(Motor_Mode_Set src/Motor_Mode_Set.cpp)
 
 # target_link_libraries(can_node ${catkin_LIBRARIES})
 target_link_libraries(can_motor ${catkin_LIBRARIES})
-target_link_libraries(motor_MS ${catkin_LIBRARIES})
+target_link_libraries(Motor_MS ${catkin_LIBRARIES})
 target_link_libraries(Motor_Pos_Tar ${catkin_LIBRARIES})
+target_link_libraries(Motor_Spd_Tar ${catkin_LIBRARIES})
 target_link_libraries(Motor_Mode_Set ${catkin_LIBRARIES})
