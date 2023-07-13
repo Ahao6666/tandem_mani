@@ -12,7 +12,7 @@ sleep ${module_delay}
 echo "gazebo ready."
 
 # 1. establich model 
-gnome-terminal -x  bash -c "rosrun gazebo_ros spawn_model -file ~/tandem_mani/src/tandem_mani/urdf/tandem_mani.urdf -urdf -model tandem_mani"
+gnome-terminal -x  bash -c "rosrun gazebo_ros spawn_model -sdf -file ~/tandem_mani/src/tandem_mani/urdf/tandem_mani.sdf -model tandem_mani"
 sleep ${module_delay}
 echo "model ready."
 

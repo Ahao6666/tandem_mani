@@ -37,6 +37,12 @@ add_executable(Motor_Pos_Tar src/Motor_Pos_Tar.cpp)
 add_executable(Motor_Spd_Tar src/Motor_Spd_Tar.cpp)
 add_executable(Motor_Mode_Set src/Motor_Mode_Set.cpp)
 
+add_dependencies(can_motor can_communication_gencpp)
+add_dependencies(Motor_MS can_communication_gencpp)
+add_dependencies(Motor_Pos_Tar can_communication_gencpp)
+add_dependencies(Motor_Spd_Tar can_communication_gencpp)
+add_dependencies(Motor_Mode_Set can_communication_gencpp)
+
 # target_link_libraries(can_node ${catkin_LIBRARIES})
 target_link_libraries(can_motor ${catkin_LIBRARIES})
 target_link_libraries(Motor_MS ${catkin_LIBRARIES})
