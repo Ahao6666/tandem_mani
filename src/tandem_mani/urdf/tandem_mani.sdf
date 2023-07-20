@@ -10,14 +10,14 @@
     <link name='platform'>
       <pose>0 0 0 0 0 0</pose>
       <inertial>
-        <mass>6</mass>
+        <mass>6000</mass>
         <inertia>
-          <ixx>2</ixx>
+          <ixx>20</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>2</iyy>
+          <iyy>20</iyy>
           <iyz>0</iyz>
-          <izz>2</izz>
+          <izz>20</izz>
         </inertia>
       </inertial>
       <self_collide>1</self_collide>
@@ -36,6 +36,12 @@
             <length>0.1</length>
           </cylinder>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0.1 0.1 0.1 1</ambient>
+          <diffuse>0.1 0.1 0.2 1</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='platform_base_link' type='revolute'>
@@ -88,6 +94,12 @@
             <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
           </mesh>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0.8 0.8 0 0.8</ambient>
+          <diffuse>0.8 0.8 0 0.8</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='joint1' type='revolute'>
@@ -140,6 +152,12 @@
             <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
           </mesh>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0 1 1 0.8</ambient>
+          <diffuse>0 1 1 0.8</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='joint2' type='revolute'>
@@ -192,6 +210,12 @@
             <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
           </mesh>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0.8 0.8 0 0.8</ambient>
+          <diffuse>0.8 0.8 0 0.8</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='joint3' type='revolute'>
@@ -244,6 +268,12 @@
             <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
           </mesh>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0 1 1 0.8</ambient>
+          <diffuse>0 1 1 0.8</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='joint4' type='revolute'>
@@ -296,6 +326,12 @@
             <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
           </mesh>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0.8 0.8 0 0.8</ambient>
+          <diffuse>0.8 0.8 0 0.8</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='joint5' type='revolute'>
@@ -348,6 +384,12 @@
             <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
           </mesh>
         </geometry>
+        <material> <!--  material -->
+          <ambient>0 1 1 0.8</ambient>
+          <diffuse>0 1 1 0.8</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 0</emissive>
+        </material> <!--End material -->
       </visual>
     </link>
     <joint name='end_joint' type='revolute'>
