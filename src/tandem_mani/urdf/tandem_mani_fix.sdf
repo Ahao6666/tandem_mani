@@ -8,7 +8,7 @@
       <pose>0 0 0 0 -0 0</pose>
     </link>
     <link name='platform'>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0.1 0 0 0</pose>
       <inertial>
         <mass>6000</mass>
         <inertia>
@@ -44,16 +44,12 @@
         </material> <!--End material -->
       </visual>
     </link>
-    <joint name='platform_base_link' type='revolute'>
+    <joint name='platform_base_link' type='fixed'>
       <pose relative_to='platform'>0 0 0 0 0 0</pose>
       <parent>platform</parent>
       <child>base_link</child>
       <axis>
         <xyz>0 0 1</xyz>
-        <limit>
-          <lower>-0.01</lower>
-          <upper>0.01</upper>
-        </limit>
       </axis>
     </joint>
     <link name='base_link'>
@@ -98,20 +94,12 @@
         </material> <!--End material -->
       </visual>
     </link>
-    <joint name='joint1' type='revolute'>
+    <joint name='joint1' type='fixed'>
       <pose relative_to='base_link'>0.000158 6.4e-05 -0.093 0 -0 1.5708</pose>
       <parent>base_link</parent>
       <child>link1</child>
       <axis>
         <xyz>0 0 1</xyz>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-        </dynamics>
       </axis>
     </joint>
     <link name='link1'>
@@ -156,20 +144,12 @@
         </material> <!--End material -->
       </visual>
     </link>
-    <joint name='joint2' type='revolute'>
+    <joint name='joint2' type='fixed'>
       <pose relative_to='link1'>0 0 0 -1.57079 1.57079 0</pose>
       <parent>link1</parent>
       <child>link2</child>
       <axis>
         <xyz>0 0 1</xyz>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-        </dynamics>
       </axis>
     </joint>
     <link name='link2'>
@@ -214,20 +194,12 @@
         </material> <!--End material -->
       </visual>
     </link>
-    <joint name='joint3' type='revolute'>
+    <joint name='joint3' type='fixed'>
       <pose relative_to='link2'>0 -0.189 0 1.5708 -0 0</pose>
       <parent>link2</parent>
       <child>link3</child>
       <axis>
         <xyz>0 0 -1</xyz>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-        </dynamics>
       </axis>
     </joint>
     <link name='link3'>
@@ -272,20 +244,12 @@
         </material> <!--End material -->
       </visual>
     </link>
-    <joint name='joint4' type='revolute'>
+    <joint name='joint4' type='fixed'>
       <pose relative_to='link3'>0 0 0 -1.57079 -1.57079 0</pose>
       <parent>link3</parent>
       <child>link4</child>
       <axis>
         <xyz>0 0 1</xyz>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-        </dynamics>
       </axis>
     </joint>
     <link name='link4'>
@@ -327,20 +291,12 @@
         </material> <!--End material -->
       </visual>
     </link>
-    <joint name='joint5' type='revolute'>
+    <joint name='joint5' type='fixed'>
       <pose relative_to='link4'>0.157 0 0 0 -0 3.14159</pose>
       <parent>link4</parent>
       <child>link5</child>
       <axis>
         <xyz>0 0 1</xyz>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-        </dynamics>
       </axis>
     </joint>
     <link name='link5'>
