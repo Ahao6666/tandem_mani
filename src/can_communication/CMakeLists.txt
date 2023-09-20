@@ -16,6 +16,7 @@ add_message_files(
 add_service_files(
 	FILES
   MotorModeSet.srv
+  MotorPIDSet.srv
 )
 
 generate_messages(
@@ -36,6 +37,7 @@ add_executable(Motor_MS src/Motor_MS.c)
 add_executable(Motor_Pos_Tar src/Motor_Pos_Tar.cpp)
 add_executable(Motor_Spd_Tar src/Motor_Spd_Tar.cpp)
 add_executable(Motor_Mode_Set src/Motor_Mode_Set.cpp)
+add_executable(Motor_PID_Set src/Motor_PID_Set.cpp)
 
 # target_link_libraries(can_node ${catkin_LIBRARIES})
 target_link_libraries(can_motor ${catkin_LIBRARIES})
@@ -43,3 +45,4 @@ target_link_libraries(Motor_MS ${catkin_LIBRARIES})
 target_link_libraries(Motor_Pos_Tar ${catkin_LIBRARIES})
 target_link_libraries(Motor_Spd_Tar ${catkin_LIBRARIES})
 target_link_libraries(Motor_Mode_Set ${catkin_LIBRARIES})
+target_link_libraries(Motor_PID_Set ${catkin_LIBRARIES})

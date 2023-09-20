@@ -386,7 +386,6 @@ void receive_Callback(const can_msgs::Frame::ConstPtr& msg)
 }
 void MotorPosTar_Callback(const can_communication::MotorPosTar& msg)
 {
-	std::cout<<"get pos tar"<<std::endl;
 	MotorPosTar_msg.num = msg.num;
 	MotorPosTar_msg.pos_tar = msg.pos_tar;
 	MotorPosTar_msg.time_dur = msg.time_dur;
@@ -402,7 +401,6 @@ bool MotorModeSet_Callback(can_communication::MotorModeSet::Request  &req,
         can_communication::MotorModeSet::Response &res)
 {
     Motor_mode = req.mode;
-    std::cout<<"MotorModeSet_Callback"<<unsigned(Motor_mode)<<std::endl;
 	// switch running Motor_mode
 	for(int i=0; i<MC_GetOnlineMotorNum(); i++){
 		MC_SetMotorModeEncode(i , Motor_mode);
@@ -410,7 +408,25 @@ bool MotorModeSet_Callback(can_communication::MotorModeSet::Request  &req,
     res.success = true;
     return true;
 }
-
+//mode PID参数设置服务的回调函数
+bool MotorPIDSet_Callback(can_communication::MotorPIDSet::Request  &req,
+        can_communication::MotorPIDSet::Response &res)
+{
+    std::cout<<"Kp:"<<unsigned(req.kp)<<std::endl;
+    std::cout<<"Ki:"<<unsigned(req.ki)<<std::endl;
+    std::cout<<"Kd:"<<unsigned(req.kd)<<std::endl;
+	for(int i=0; i<MC_GetOnlineMotorNum(); i++){
+		MC_StopMotorEncode(i);
+		std::cout<<"MC_StopMotorEncode"<<std::endl;
+		MC_SetPID_Encode(i, 3, REG_KP, 502, REG_KP);
+		MC_SetPID_Encode(i, 3, REG_KI, 1, REG_KI);
+		MC_SetPID_Encode(i, 3, REG_KD, 61, REG_KD);
+		MC_StartMotorEncode(i);
+		std::cout<<"MC_StartMotorEncode"<<std::endl;
+	}
+    res.pid_setting_is_done = true;
+    return true;
+}
 int main(int argc, char** argv)
 {
     // 初始化ROS节点
@@ -454,8 +470,9 @@ int main(int argc, char** argv)
     // 【消息】订阅电机速度参考信息
     ros::Subscriber MotorSpdTar_sub = nh.subscribe("/MotorSpdTar", 10, MotorSpdTar_Callback);
     // 【服务】电机模式切换服务
-	ros::ServiceServer service = nh.advertiseService("Motor_mode_set", MotorModeSet_Callback);
-
+	ros::ServiceServer MotorMode_srv = nh.advertiseService("Motor_mode_set", MotorModeSet_Callback);
+    // 【服务】PID参数设置服务
+	ros::ServiceServer MotorPID_srv = nh.advertiseService("Motor_PID_set", MotorPIDSet_Callback);
     MotorPosTar_msg.pos_tar = {0, 0, 0, 0, 0};
     MotorPosTar_msg.time_dur = {1000, 0, 0, 0, 0};
     MotorSpdTar_msg.spd_tar = {0, 0, 0, 0, 0};
@@ -466,36 +483,38 @@ int main(int argc, char** argv)
     // 发布和订阅CAN消息
     while (ros::ok())
     {
-    std::cout<< "OnlineMotorNum is:"<<unsigned(MC_GetOnlineMotorNum()) << std::endl;
+    // std::cout<< "OnlineMotorNum is:"<<unsigned(MC_GetOnlineMotorNum()) << std::endl;
     
     if(MC_GetOnlineMotorNum() == 0){
 		MC_FindOnlineMotor();
 		// MC_StopMotorEncode(0);
     }
     else{
-      for(int i=0; i<MC_GetOnlineMotorNum(); i++){
-        // If the motor is idle, then start
-        if(!motorData[MC_GetMotorNum(i)].smotorState)
-          	MC_StartMotorEncode(i);
-		switch (Motor_mode) {
-			case RTORQUE_MODE:
-				break;
-			case RSPEED_MODE :/*  速度模式 */
-				std::cout<< "RSPEED_MODE"<< std::endl;
-                MC_WriteSpeedEncode(i, MotorSpdTar_msg.spd_tar[i], MotorSpdTar_msg.time_dur[i]);
-				break;
-			case RPOSITION_MODE :/* 普通位置模式 */
-				std::cout<< "RPOSITION_MODE"<< std::endl;
-                MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
-				break;
-			case RPOSITION_MODE_T :/* 线性插帧模式 */
-				std::cout<< "RPOSITION_MODE_T"<< std::endl;
-				break;
-			default :
-				std::cout<< "Mode set error!"<< std::endl;
-		}
-      }
+      	for(int i=0; i<MC_GetOnlineMotorNum(); i++){
+			// If the motor is idle, then start
+			if(!motorData[MC_GetMotorNum(i)].smotorState)
+				MC_StartMotorEncode(i);
+			switch (Motor_mode) {
+				case RTORQUE_MODE:
+					break;
+				case RSPEED_MODE :/*  速度模式 */
+					// std::cout<< "RSPEED_MODE"<< std::endl;
+					MC_WriteSpeedEncode(i, MotorSpdTar_msg.spd_tar[i], MotorSpdTar_msg.time_dur[i]);
+					break;
+				case RPOSITION_MODE :/* 普通位置模式 */
+					// std::cout<< "RPOSITION_MODE"<< std::endl;
+					MC_WritePositionEncode(i, MotorPosTar_msg.pos_tar[i], MotorPosTar_msg.time_dur[i]);
+					break;
+				case RPOSITION_MODE_T :/* 线性插帧模式 */
+					// std::cout<< "RPOSITION_MODE_T"<< std::endl;
+					break;
+				default :
+					std::cout<< "Mode set error!"<< std::endl;
+			}
+      	}
     }
+// void MC_SetCanIndexEncode(uint8_t num , uint8_t index)
+// void MC_SetAllSaveEncode(uint8_t num)
 
     ros::Duration(0.01).sleep();
     

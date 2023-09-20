@@ -8,7 +8,10 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::ServiceClient client = n.serviceClient<can_communication::MotorModeSet>("Motor_mode_set");
     can_communication::MotorModeSet srv;
-    srv.request.mode = atoll(argv[1]);
+
+    std::cout << "Enter Motor Mode value\n(0 for RTORQUE_MODE,\n 1 for RSPEED_MODE,\n 2 for RPOSITION_MODE,\n 3 for RPOSITION_MODE_T): ";
+    std::cin >> srv.request.mode;
+    
     if (client.call(srv))
     {
         if(srv.response.success)
