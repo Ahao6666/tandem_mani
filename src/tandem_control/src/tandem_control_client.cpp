@@ -19,85 +19,47 @@
 #include <gazebo_msgs/GetJointProperties.h>
 #include <gazebo_msgs/GetLinkState.h>
 #include <std_msgs/Float64.h>
+#include <geometry_msgs/Pose.h>
 #include "manipulator_kinematic.h"
 
-//compute Euler angles by R
-Vector3d computeEulerAngles(Matrix3d R) {
-	double theta = 0, psi = 0, pfi = 0;
-	if (abs(R(2, 0)) < 1 - FLT_MIN || abs(R(2, 0)) > 1 + FLT_MIN) { // abs(R(2, 0)) != 1
-		double theta1 = -asin(R(2, 0));
-		double theta2 = M_PI- theta1;
-		double psi1 = atan2(R(2, 1) / cos(theta1), R(2, 2) / cos(theta1));
-		double psi2 = atan2(R(2, 0) / cos(theta2), R(2, 2) / cos(theta2));
-		double pfi1 = atan2(R(1, 0) / cos(theta1), R(0, 0) / cos(theta1));
-		double pfi2 = atan2(R(1, 0) / cos(theta2), R(0, 0) / cos(theta2));
-		theta = theta1;
-		psi = psi1;
-		pfi = pfi1;
-	}
-	else {
-		double phi = 0;
-		double delta = atan2(R(0, 1), R(0, 2));
-		if (R(2, 0) > -1 - FLT_MIN && R(2, 0) < -1 + FLT_MIN) { // R(2,0) == -1
-			theta = M_PI/ 2;
-			psi = phi + delta;
-		}
-		else {
-			theta = -M_PI/ 2;
-			psi = -phi + delta;
-		}
-	}
-	Vector3d EulerAngles;
-	EulerAngles[0] = psi;
-	EulerAngles[1] = theta;
-	EulerAngles[2] = pfi;
-	return EulerAngles;
-}
-// Plan the End Effector position and velocity
-void planEEPoseAndVel(Manipulator_Kinematic K_model,VectorXd &desiredEEPose,VectorXd &desiredEEVel){
+geometry_msgs::Pose end_point_pose;
+void planEEPoseAndVel(Manipulator_Kinematic K_model,Vector3d &desiredEEPos,Matrix3d &desiredEERotation,VectorXd &desiredEEVel){
 	double currentTime=ros::Time::now().toSec();
 	VectorXd jointAngle(5);
 	VectorXd jointAngleVel(5);
 
 	//input desired joints traj
 	for (int j = 0; j < 5; j++) {
-		jointAngle[j]= 5 * sin(currentTime) * M_PI / 30;
-		jointAngleVel[j]=5 * cos(currentTime) * M_PI / 30;
-		// jointAngle[j]= 1;
-		// jointAngleVel[j]=0;
-	}
+		// jointAngle[j]= 5 * sin(currentTime) * M_PI / 30;
+		// jointAngleVel[j]=5 * cos(currentTime) * M_PI / 30;
+		jointAngle[j]= 0.1;
+		jointAngleVel[j]=0;
+		}
 	//compute desired EE's pose
-	K_model.get_R_t(jointAngle);
-	Matrix3d EERotationMatrix;
-	EERotationMatrix= K_model.T.at(5).block<3, 3>(0, 0);
-
-	Vector3d pos = K_model.T.at(5).block<3, 1>(0, 3);
-	Vector3d EulerAngles=computeEulerAngles(EERotationMatrix);
-
-	desiredEEPose.resize(5);
-	desiredEEPose.block<3,1>(0,0)=pos;
-	desiredEEPose.block<2,1>(3,0)=EulerAngles.block<2,1>(0,0);
+	K_model.forward_kinematic(jointAngle);
+	desiredEEPos = K_model.T_from_base.at(5).block<3, 1>(0, 3);
+	desiredEERotation= K_model.T_from_base.at(5).block<3, 3>(0, 0);
 
 	// compute desired vel by jacobian
-	K_model.get_jacobain(jointAngle);
+	K_model.get_jacobian();
 	MatrixXd jacobian(5,5);
-	jacobian=K_model.jacob.block<5, 5>(0, 0);
+	jacobian=K_model.jacobian.block<5, 5>(0, 0);
+    desiredEEVel.resize(5);
 	desiredEEVel=jacobian*jointAngleVel;
 }
 
-void getEEPose(Manipulator_Kinematic K_model, VectorXd current_jnts, VectorXd &EEPose){
+void getEEPose(Manipulator_Kinematic K_model,VectorXd current_jnts,Vector3d &EEPos,Matrix3d &EERotation){
 	//compute EE's pose
 	current_jnts.resize(5);
-	K_model.get_R_t(current_jnts);
-	Matrix3d EERotationMatrix;
-	EERotationMatrix= K_model.T.at(5).block<3, 3>(0, 0);
+	K_model.forward_kinematic(current_jnts);
+	EEPos = K_model.T_from_base.at(5).block<3, 1>(0, 3);
+	EERotation= K_model.T_from_base.at(5).block<3, 3>(0, 0);
+}
 
-	Vector3d pos = K_model.T.at(5).block<3, 1>(0, 3);
-	Vector3d EulerAngles=computeEulerAngles(EERotationMatrix);
-
-	EEPose.resize(5);
-	EEPose.block<3,1>(0,0)=pos;
-	EEPose.block<2,1>(3,0)=EulerAngles.block<2,1>(0,0);
+void EEposeCmdCB(const geometry_msgs::Pose& EEpose) {
+	// ROS_INFO("received value of %s_pos_cmd is: %f", joint_name.c_str(), pos_cmd_msg.data); 
+	end_point_pose.position = EEpose.position;
+	end_point_pose.orientation = EEpose.orientation;
 }
 
 // trajectory action client for the robot
@@ -119,20 +81,27 @@ int main(int argc, char** argv) {
 
 	// publish desired joints
 	std::vector<double> cmd_jnts_pos; // command joints position to be sent
+	std::vector<double> cmd_jnts_vel; // command joints position to be sent
 	std::vector<ros::Publisher> cmd_jnts_pos_publisher;  // initialization will be in executeCB()
+	std::vector<ros::Publisher> cmd_jnts_vel_publisher;  // initialization will be in executeCB()
 	cmd_jnts_pos.resize(5);
 	cmd_jnts_pos_publisher.resize(5);
+	cmd_jnts_vel.resize(5);
+	cmd_jnts_vel_publisher.resize(5);
+
+	// subscribe EEPose
+	ros::Subscriber EEpose_subscriber = nh.subscribe("end_point_pose", 1, &EEposeCmdCB);
 
 	std::string jointNames[]={"joint1","joint2","joint3","joint4","joint5"};
-	//initialize command publishers for each joints，先advertise一下,再publish一下
+	//initialize command publishers for each joints，first advertise,then publish
 	for(int j=0; j < 5; j++){
-		cmd_jnts_pos_publisher[j] = nh.advertise<std_msgs::Float64>( 
-		jointNames[j] + "_cmd_jnts_pos", 1, true);
+			cmd_jnts_pos_publisher[j] = nh.advertise<std_msgs::Float64>( 
+			jointNames[j] + "_cmd_jnts_pos", 1, true);
+			cmd_jnts_vel_publisher[j] = nh.advertise<std_msgs::Float64>( 
+			jointNames[j] + "_cmd_jnts_vel", 1, true);
 	}
 
 	VectorXd current_jnts(5);
-	VectorXd EEPose_gz(3);
-	VectorXd EEPose(5);
 	VectorXd desiredEEPose(5); 
 	VectorXd desiredEEVel(5);
 	VectorXd poseError(5);
@@ -158,47 +127,63 @@ int main(int argc, char** argv) {
 			current_jnts[i] = get_joint_state_srv_msg.response.position[0];
 		}
 
-		//call for current EE pose
-		get_link_state_srv_msg.request.link_name = "link5";
-		//get_link_state_srv_msg.request.reference_frame = "wrold";
-		get_link_state_client.call(get_link_state_srv_msg);
-		EEPose_gz[0]= get_link_state_srv_msg.response.link_state.pose.position.x;
-		EEPose_gz[1]= get_link_state_srv_msg.response.link_state.pose.position.y;
-		EEPose_gz[2]= get_link_state_srv_msg.response.link_state.pose.position.z;
-		ROS_INFO("EEpose_gz %f, %f, %f",EEPose_gz[0],EEPose_gz[1],EEPose_gz[2]);
+	//secondly,compute EE pose
+	Vector3d EEPos;Matrix3d EERotation;
+	getEEPose(K_model,current_jnts,EEPos,EERotation);
+	ROS_INFO("EEpos1 %f, %f, %f",EEPos[0],EEPos[1],EEPos[2]);
+	ROS_INFO("EEpos2 %f, %f, %f",end_point_pose.position.x,end_point_pose.position.y,end_point_pose.position.z);
 
-		//secondly,compute EE pose
-		getEEPose(K_model, current_jnts, EEPose);
-		ROS_INFO("EEpose %f, %f, %f", EEPose[0], EEPose[1], EEPose[2]);
+	//thirdly,compute desired EE pose and vel
+	Vector3d desiredEEPos; Matrix3d desiredEERotation;VectorXd desiredEEVel(5);
+	planEEPoseAndVel(K_model,desiredEEPos,desiredEERotation,desiredEEVel);
+	//ROS_INFO("EEpose %f, %f, %f, %f,%f",desiredEEPose[0],desiredEEPose[1],desiredEEPose[2],desiredEEPose[3],desiredEEPose[4]);
 
-		//thirdly,compute desired EE pose and vel
-		planEEPoseAndVel(K_model,desiredEEPose,desiredEEVel);
+	//ClIK method 
+	//firstly,compute position and rotation error
+	Vector3d pos_error=desiredEEPos-EEPos;//position error
+	ROS_INFO("pos_error %f, %f, %f",pos_error[0],pos_error[1],pos_error[2]);
 
-		//ClIK method 
-		poseError = desiredEEPose - EEPose;
-		EEVel = desiredEEVel + kp*poseError;
+	//compute orientation , a little complex
+	Vector3d n=EERotation.block<3,1>(0,0);Vector3d s=EERotation.block<3,1>(0,1);Vector3d a=EERotation.block<3,1>(0,2);
 
-		//DLS
-		K_model.get_jacobain(current_jnts);
+	Vector3d desired_n=desiredEERotation.block<3,1>(0,0);Vector3d desired_s=desiredEERotation.block<3,1>(0,1);
+	Vector3d desired_a=desiredEERotation.block<3,1>(0,2);
+	Vector3d rotation_error=1.0/2*(n.cross(desired_n)+s.cross(desired_s)+a.cross(desired_a));
 
-		jacobian = K_model.jacob.block<5, 5>(0, 0);
-		JacobiSVD<MatrixXd> svd(jacobian, ComputeThinU | ComputeThinV);
-		sigma = svd.singularValues()[4];// 第五个特征值
+	VectorXd poseError(5);VectorXd EEVel(5); double kp=1;
+	poseError.block<3,1>(0,0)=pos_error;
+	poseError.block<2,1>(3,0)=rotation_error.block<2,1>(0,0);
+	ROS_INFO("rotation_error %f, %f, %f",rotation_error[0],rotation_error[1],rotation_error[2]);
 
-		if (sigma >= epsilon)
-			lambda = 0;
-		else
-           lambda = lambda_max * (1 - sigma / epsilon);
+	EEVel=desiredEEVel+kp*poseError;
+
+	//DLS
+	K_model.forward_kinematic(current_jnts);//for jacobian
+	K_model.get_jacobian();
+	MatrixXd jacobian(5,5);
+	jacobian=K_model.jacobian.block<5, 5>(0, 0);
+
+	double lambda_max = 0.005;double sigma= 0.5;double lambda;
+	MatrixXd J_mid=jacobian * jacobian.transpose();
+	lambda=lambda_max*exp(-J_mid.determinant()/(2*pow(sigma,2)));
+	
 		
-		pseudoInverseJacbian = jacobian.transpose() * (jacobian * jacobian.transpose()+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
-		desiredJointsVel = pseudoInverseJacbian * EEVel;
-		desiredJoints = current_jnts + desiredJointsVel * dt;
+	MatrixXd pseudoInverseJacbian(5,5);VectorXd desiredJointsVel(5);
+	static VectorXd desiredJoints =VectorXd::Zero(5);//static memory
+	pseudoInverseJacbian = jacobian.transpose() *(J_mid+ pow(lambda,2) * MatrixXd::Identity(5, 5)).inverse();
+	desiredJointsVel=pseudoInverseJacbian * EEVel;
 
+	desiredJoints=desiredJoints+desiredJointsVel*dt;
+	//ROS_INFO("desiredJoints %f, %f, %f,%f,%f",desiredJoints[0],desiredJoints[1],desiredJoints[2],desiredJoints[3],desiredJoints[4]);
+
+		std_msgs::Float64 cmd_jnts_pos_msg;
+		std_msgs::Float64 cmd_jnts_vel_msg;
 		for(int j=0; j < 5; j++){
-			std_msgs::Float64 cmd_jnts_pos_msg;
 			cmd_jnts_pos_msg.data = desiredJoints[j];
-			//cmd_jnts_pos_msg.data = 0;
 			cmd_jnts_pos_publisher[j].publish(cmd_jnts_pos_msg);
+
+			cmd_jnts_vel_msg.data = desiredJointsVel[j];
+			cmd_jnts_vel_publisher[j].publish(cmd_jnts_vel_msg);
 		}
 
 		ros::spinOnce();

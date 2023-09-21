@@ -15,6 +15,8 @@
 #include <gazebo_msgs/GetJointProperties.h>
 #include <sensor_msgs/JointState.h>
 #include <tandem_control/kpkv_msg.h>
+#include "manipulator_IDynamic.h"
+
 
 // define class to instantiate joints
 class Joint {
@@ -22,11 +24,19 @@ public:
 	Joint(ros::NodeHandle nh, std::string joint_name, double dt); // constructor
 	~Joint() {}; // destructor
 	void getJointState();
-	void jointTrqControl();
+	void jointTrqControl(double torque);
 	void kpkvSetting(double kp, double kv);
+
+	double pos_cur; // current joint position
+	double vel_cur; // current joint velocity
+	double pos_cmd; // joint position from commander
+	double vel_cmd; // joint velocity from commander
+	double kp;
+	double kv;
 private:
 	// callback for the pos_cmd subscriber
 	void posCmdCB(const std_msgs::Float64& pos_cmd_msg);
+	void velCmdCB(const std_msgs::Float64& vel_cmd_msg);
 	// callback for kpkv service server
 	bool kpkvCallback(tandem_control::kpkv_msgRequest& request, tandem_control::kpkv_msgResponse& response);
 	// service clients
@@ -37,6 +47,8 @@ private:
 	ros::Publisher joint_state_publisher;
 	// subscriber object
 	ros::Subscriber pos_cmd_subscriber;
+	ros::Subscriber vel_cmd_subscriber;
+
 	// gazebo/sensor messages
 	gazebo_msgs::GetJointProperties get_joint_state_srv_msg;
 	gazebo_msgs::ApplyJointEffort effort_cmd_srv_msg;
@@ -47,13 +59,7 @@ private:
 	ros::ServiceServer kpkv_server;
 
 	// control parameters
-	double pos_cur; // current joint position
-	double vel_cur; // current joint velocity
-	double pos_cmd; // joint position from commander
-	double pos_err; // error between pos_cmd and pos_cur
 	double trq_cmd; // torque to be published
-	double kp;
-	double kv;
 	// other parameters
 	std::string joint_name;
 };
@@ -62,6 +68,7 @@ Joint::Joint(ros::NodeHandle nh, std::string joint_name, double dt) {
 	// initialize parameters
 	this -> joint_name = joint_name;
 	pos_cmd = 0.0;
+	vel_cmd = 0.0;
 	ros::Duration duration(dt);
 	kp = 10.0;
 	kv = 3.0;
@@ -74,6 +81,8 @@ Joint::Joint(ros::NodeHandle nh, std::string joint_name, double dt) {
 	joint_state_publisher = nh.advertise<sensor_msgs::JointState>(joint_name + "_states", 1); 
 	// initialize subscriber object
 	pos_cmd_subscriber = nh.subscribe(joint_name + "_cmd_jnts_pos", 1, &Joint::posCmdCB, this);
+	vel_cmd_subscriber = nh.subscribe(joint_name + "_cmd_jnts_vel", 1, &Joint::velCmdCB, this);
+
 	// initialize kpkv service server
 	kpkv_server = nh.advertiseService(joint_name + "_kpkv_service", &Joint::kpkvCallback, this);
 
@@ -96,6 +105,12 @@ void Joint::posCmdCB(const std_msgs::Float64& pos_cmd_msg) {
 	pos_cmd = pos_cmd_msg.data;
 }
 
+void Joint::velCmdCB(const std_msgs::Float64& vel_cmd_msg) {
+	// too much information
+	// ROS_INFO("received value of %s_pos_cmd is: %f", joint_name.c_str(), pos_cmd_msg.data); 
+	vel_cmd = vel_cmd_msg.data;
+}
+
 void Joint::getJointState() {
 	// get joint state
 	get_jnt_state_client.call(get_joint_state_srv_msg);
@@ -109,17 +124,10 @@ void Joint::getJointState() {
 }
 
 // calculate joint torque, publish them, send to gazebo
-void Joint::jointTrqControl() {
-	pos_err = pos_cmd - pos_cur;
-	// watch for periodicity
-	if (pos_err > M_PI)
-		pos_err = pos_err - 2 * M_PI;
-	if (pos_err < -M_PI)
-		pos_err = pos_err + 2 * M_PI;
-	// control algorithm in one line
-	trq_cmd  = kp * pos_err - kv * vel_cur;
+void Joint::jointTrqControl(double torque) {
+	
 	// publish the torque message
-	trq_msg.data = trq_cmd;
+	trq_msg.data = torque;
 	trq_publisher.publish(trq_msg);
 	// send torque command to gazebo
 	effort_cmd_srv_msg.request.effort = trq_cmd;
@@ -148,7 +156,8 @@ bool Joint::kpkvCallback(tandem_control::kpkv_msgRequest& request, tandem_contro
 int main(int argc, char **argv) {
     ros::init(argc, argv, "tandem_control_controller_node");
     ros::NodeHandle nh;
-	ros::Duration half_sec(0.5);
+	ros::Duration half_sec(1);
+	Manipulator_IDynamic ID_model;
 
 	// make sure apply_joint_effort service is ready
 	bool service_ready = false;
@@ -176,11 +185,18 @@ int main(int argc, char **argv) {
 	Joint joint4(nh, "joint4", dt);
 	Joint joint5(nh, "joint5", dt);
 
-	joint1.kpkvSetting(20, 1.0);
-	joint2.kpkvSetting(20, 0.8);
-	joint3.kpkvSetting(3.0, 0.1);
-	joint4.kpkvSetting(2.0, 0.05);
-	joint5.kpkvSetting(0.5, 0.01);
+	joint1.kpkvSetting(50, 20);
+	joint2.kpkvSetting(50, 20);
+	joint3.kpkvSetting(50, 20);
+	joint4.kpkvSetting(50, 20);
+	joint5.kpkvSetting(50, 20);
+
+	std::vector<double> pos_error; pos_error.resize(5);
+	std::vector<double> vel_error; vel_error.resize(5);
+    std::vector<double> desired_accel; desired_accel.resize(5);
+	std::vector<double> pos_cur_all;pos_cur_all.resize(5);
+	std::vector<double> vel_cur_all;vel_cur_all.resize(5);
+	std::vector<double> torque;torque.resize(5);
 
 	ros::Rate rate_timer(1 / dt);
 	while(ros::ok()) {
@@ -191,12 +207,48 @@ int main(int argc, char **argv) {
 		joint4.getJointState();
 		joint5.getJointState();
 
+		// compute torque, not perfect
+
+		//firstly,compute joint pos error
+		pos_error[0]=joint1.pos_cmd-joint1.pos_cur;
+		pos_error[1]=joint2.pos_cmd-joint2.pos_cur;
+		pos_error[2]=joint3.pos_cmd-joint3.pos_cur;
+		pos_error[3]=joint4.pos_cmd-joint4.pos_cur;
+		pos_error[4]=joint5.pos_cmd-joint5.pos_cur;
+
+        //compute joint vel error
+		vel_error[0]=joint1.vel_cmd-joint1.vel_cur;
+		vel_error[1]=joint2.vel_cmd-joint2.vel_cur;
+		vel_error[2]=joint3.vel_cmd-joint3.vel_cur;
+		vel_error[3]=joint4.vel_cmd-joint4.vel_cur;
+		vel_error[4]=joint5.vel_cmd-joint5.vel_cur;
+	    //compute desired acceleration by PD control
+		desired_accel[0]=joint1.kp*pos_error[0]+joint1.kv*vel_error[0];
+		desired_accel[1]=joint2.kp*pos_error[1]+joint2.kv*vel_error[1];
+		desired_accel[2]=joint3.kp*pos_error[2]+joint3.kv*vel_error[2];
+		desired_accel[3]=joint4.kp*pos_error[3]+joint4.kv*vel_error[3];
+		desired_accel[4]=joint5.kp*pos_error[4]+joint5.kv*vel_error[4];
+
+		//transfor to vector
+		pos_cur_all[0]=joint1.pos_cur;
+		pos_cur_all[1]=joint2.pos_cur;
+		pos_cur_all[2]=joint3.pos_cur;
+		pos_cur_all[3]=joint4.pos_cur;
+		pos_cur_all[4]=joint5.pos_cur;
+
+		vel_cur_all[0]=joint1.vel_cur;
+		vel_cur_all[1]=joint2.vel_cur;
+		vel_cur_all[2]=joint3.vel_cur;
+		vel_cur_all[3]=joint4.vel_cur;
+		vel_cur_all[4]=joint5.vel_cur;
+
+       torque = ID_model.rnea(pos_cur_all, vel_cur_all, desired_accel);
 		// calculate the torque for each joint and publish them
-		joint1.jointTrqControl();
-		joint2.jointTrqControl();
-		joint3.jointTrqControl();
-		joint4.jointTrqControl();
-		joint5.jointTrqControl();
+		joint1.jointTrqControl(torque[0]);
+		joint2.jointTrqControl(torque[1]);
+		joint3.jointTrqControl(torque[2]);
+		joint4.jointTrqControl(torque[3]);
+		joint5.jointTrqControl(torque[4]);
 
 		ros::spinOnce(); // update pos_cmd, kpkv
 		rate_timer.sleep(); // sleep the sample time

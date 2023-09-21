@@ -10,7 +10,7 @@
     name="spawn_model"
     pkg="gazebo_ros"
     type="spawn_model"
-    args="-file $(find tandem_mani)/urdf/tandem_mani.urdf -urdf -model tandem_mani"
+    args="-file $(find tandem_mani)/urdf/tandem_mani_fix.urdf -urdf -model tandem_mani"
     output="screen" />
   <node
     name="fake_joint_calibration"

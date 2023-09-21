@@ -1,97 +1,80 @@
 
 #include <iostream>
 #include <Eigen/Dense>
+#include <Eigen/Core>
 #include <math.h>
+#include <float.h>
 #include "manipulator_kinematic.h"
+#include "manipulator_IDynamic.h"
 
+Manipulator_Kinematic K_model;
+Manipulator_IDynamic ID_model;
 
-//compute Euler angles by R
-Vector3d computeEulerAngles(Matrix3d R) {
-	Vector3d EulerAngles;
+// using namespace Eigen;
 
-	float theta = 0, psi = 0, pfi = 0;
-	if (abs(R(2, 0)) < 1 - FLT_MIN || abs(R(2, 0)) > 1 + FLT_MIN) { // abs(R(2, 0)) != 1
-		float theta1 = -asin(R(2, 0));
-		float theta2 = M_PI- theta1;
-		float psi1 = atan2(R(2, 1) / cos(theta1), R(2, 2) / cos(theta1));
-		float psi2 = atan2(R(2, 0) / cos(theta2), R(2, 2) / cos(theta2));
-		float pfi1 = atan2(R(1, 0) / cos(theta1), R(0, 0) / cos(theta1));
-		float pfi2 = atan2(R(1, 0) / cos(theta2), R(0, 0) / cos(theta2));
-		theta = theta1;
-		psi = psi1;
-		pfi = pfi1;
-	}
-	else {
-		float phi = 0;
-		float delta = atan2(R(0, 1), R(0, 2));
-		if (R(2, 0) > -1 - FLT_MIN && R(2, 0) < -1 + FLT_MIN) { // R(2,0) == -1
-			theta = M_PI/ 2;
-			psi = phi + delta;
-		}
-		else {
-			theta = -M_PI/ 2;
-			psi = -phi + delta;
-		}
-	}
-		EulerAngles[0] = psi;
-		EulerAngles[1] = theta;
-		EulerAngles[2] = pfi;
-	return EulerAngles;
-}
-
-void getEEPose(Manipulator_Kinematic K_model,VectorXd current_jnts,VectorXd &EEPose){
-	//compute EE's pose
-	current_jnts.resize(5);
-	K_model.get_R_t(current_jnts);
-	Matrix3d EERotationMatrix;
-	EERotationMatrix= K_model.T.at(5).block<3, 3>(0, 0);
-
-	Vector3d pos = K_model.T.at(5).block<3, 1>(0, 3);
-	Vector3d EulerAngles=computeEulerAngles(EERotationMatrix);
-
-	EEPose.resize(5);
-	EEPose.block<3,1>(0,0)=pos;
-	EEPose.block<2,1>(3,0)=EulerAngles.block<2,1>(0,0);
-}
+// VectorXd add(VectorXd x){
+// static VectorXd p=VectorXd::Zero(5);
+// p=p+x;
+// return p;
+// }
 
 int main() {
+//    Quaterniond quaternion;
+//    Vector3d eulerAngles;
+//    eulerAngles<< 0,M_PI/2,M_PI/2;
+// //    quaternion= Eigen::AngleAxisd(eulerAngles[0], Eigen::Vector3d::UnitZ()) * 
+// //                   Eigen::AngleAxisd(eulerAngles[1], Eigen::Vector3d::UnitY()) * 
+// //                   Eigen::AngleAxisd(eulerAngles[2], Eigen::Vector3d::UnitX());
+//    quaternion={1,0,0,0};
+//    Vector3d euler1 = quaternion.toRotationMatrix().eulerAngles(2, 1, 0);
+//    std::cout << "EulerAngles: " << euler1<< std::endl;
 
-double p=2;
+//    double yaw=M_PI/2;double pitch=0;double roll=-M_PI/2;
+// 	Matrix3d rotationMatrix;
+// 	rotationMatrix= AngleAxisd(yaw, Vector3d::UnitZ())*
+// 	AngleAxisd(pitch, Vector3d::UnitY())*
+// 	AngleAxisd(roll, Vector3d::UnitX());
 
-		Eigen::Matrix3d EERotationMatrix;
-        Eigen::Matrix4d rot;// 创建4行4列的double型矩阵（方阵）
-        Eigen::Matrix3d rot2;
-        Vector3d pos;
+// 	Vector3d EulerAngles2=rotationMatrix.eulerAngles(2,1,0);
+// 	std::cout << "EulerAngles: " << EulerAngles2<< std::endl
 
-        double kp=2;
-        std::string jointNames[]={"joint1","joint2","joint3","joint4","joint5"};
+// desired_accel.insert(desired_accel.begin(),0);
+// std::vector<Eigen::Vector3d> omega;    //angular velocity
+// std::vector<double> desired_accel_.insert()
+// std::vector<double>  q;
+std::vector<double> dq;
+std::vector<double>  ddq;
+// q.resize(5);q={10*M_PI/180,20*M_PI/180,30*M_PI/180,40*M_PI/180,50*M_PI/180};
+// dq.resize(5);dq={1,2,3,4,5};
+// ddq.resize(5);ddq={0.5,1,1.5,0,0};
 
-        rot2 << 1.0, 0.0, 0.0,
-		0.0, cos(p), -sin(p),
-		0.0, sin(p), cos(p);
 
-        //Vector3d  EulerAngles=computeEulerAngles(rot2); 
+// std::vector<double>  torque = ID_model.rnea(q, dq, ddq);
+VectorXd q;
+q.resize(5);
+q<<1,1,1,1,1;
+// q<<0,0,0,0,0;
+
+K_model.forward_kinematic(q);
+Vector3d desiredEEPos0 = K_model.T_from_base.at(1).block<3, 1>(0, 3);
+Vector3d desiredEEPos1 = K_model.T_from_base.at(2).block<3, 1>(0, 3);
+
+Vector3d desiredEEPos2 = K_model.T_from_base.at(4).block<3, 1>(0, 3);
+Vector3d desiredEEPos3 = K_model.T_from_base.at(5).block<3, 1>(0, 3);
+
+// Matrix3d desiredEERotation= K_model.T_from_base.at(5).block<3, 3>(0, 0);
+
+// K_model.get_jacobian();
+// MatrixXd jacobian(6,5);
+// jacobian=K_model.jacobian;
+// dq.erase(dq.begin());
+// std::cout<< desiredEEPos0<<std::endl;
+
+// std::cout<< desiredEEPos1<<std::endl;
+double a=1.0/2;
+std::cout<< desiredEEPos3<<std::endl;
+std::cout<< a<<std::endl;
 
 
-         //std::cout << "Dot product: " << EulerAngles<< std::endl;
 
-		 EERotationMatrix= rot2.block<3, 3>(0, 0);//这个样子直接赋值不可以，会报错
-         std::cout << "Dot product: " << EERotationMatrix<< std::endl;
-        //  EERotationMatrix=rot;//可以
-         EERotationMatrix.block<3, 3>(0, 0)= rot2.block<3, 3>(0, 0);//可以
-         pos=rot2.block<3, 1>(0, 0);
-
-         std::cout << "Dot product: " << pos<< std::endl;
-
-         VectorXd current_jnts(5);
-
-         VectorXd EEPose(5);
-          Manipulator_Kinematic K_model;
-	     getEEPose(K_model,current_jnts,EEPose);
-		 K_model.get_jacobain(current_jnts);
-		 MatrixXd jacobian(5,5);
-	    jacobian=K_model.jacob.block<5, 5>(0, 0);
-         std::cout << "Dot product: " << jacobian<< std::endl;
-	
-        return 0;
 }

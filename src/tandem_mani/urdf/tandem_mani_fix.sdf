@@ -74,7 +74,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
           </mesh>
         </geometry>
       </collision>
@@ -83,7 +83,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/base_link.STL</uri>
           </mesh>
         </geometry>
         <material> <!--  material -->
@@ -124,7 +124,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
           </mesh>
         </geometry>
       </collision>
@@ -133,7 +133,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link1.STL</uri>
           </mesh>
         </geometry>
         <material> <!--  material -->
@@ -174,7 +174,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
           </mesh>
         </geometry>
       </collision>
@@ -183,7 +183,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link2.STL</uri>
           </mesh>
         </geometry>
         <material> <!--  material -->
@@ -224,7 +224,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
           </mesh>
         </geometry>
       </collision>
@@ -233,7 +233,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link3.STL</uri>
           </mesh>
         </geometry>
         <material> <!--  material -->
@@ -271,7 +271,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
           </mesh>
         </geometry>
       </collision>
@@ -280,7 +280,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link4.STL</uri>
           </mesh>
         </geometry>
         <material> <!--  material -->
@@ -321,7 +321,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
                     </mesh>
         </geometry>
       </collision>
@@ -330,7 +330,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/link5.STL</uri>
           </mesh>
         </geometry>
         <material> <!--  material -->
@@ -371,7 +371,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ahao/tandem_mani/src/tandem_mani/meshes/end_point.STL</uri>
+            <uri>file:///home/ji/tandem_mani/src/tandem_mani/meshes/end_point.STL</uri>
           </mesh>
         </geometry>
       </visual>

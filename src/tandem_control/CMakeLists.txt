@@ -68,6 +68,8 @@ add_executable(tandem_control_client src/tandem_control_client.cpp)
 add_executable(floating_platform src/floating_platform.cpp)
 add_executable(record_bag_node src/record_bag_node.cpp)
 add_executable(end_point_position src/end_point_position.cpp)
+add_executable(fk src/fk.cpp)
+
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -78,6 +80,9 @@ add_dependencies(tandem_control_client tandem_control_gencpp)
 add_dependencies(floating_platform tandem_control_gencpp)
 add_dependencies(record_bag_node tandem_control_gencpp)
 add_dependencies(end_point_position tandem_control_gencpp)
+add_dependencies(fk tandem_control_gencpp)
+
+
 
 target_link_libraries(tandem_control_controller ${catkin_LIBRARIES})
 target_link_libraries(tandem_control_kpkv_serviceClient ${catkin_LIBRARIES})
@@ -85,3 +90,5 @@ target_link_libraries(tandem_control_client ${catkin_LIBRARIES})
 target_link_libraries(floating_platform ${catkin_LIBRARIES})
 target_link_libraries(record_bag_node ${catkin_LIBRARIES})
 target_link_libraries(end_point_position ${catkin_LIBRARIES})
+target_link_libraries(fk ${catkin_LIBRARIES})
+
