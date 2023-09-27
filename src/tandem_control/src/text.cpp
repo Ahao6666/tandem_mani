@@ -41,26 +41,30 @@ int main() {
 // desired_accel.insert(desired_accel.begin(),0);
 // std::vector<Eigen::Vector3d> omega;    //angular velocity
 // std::vector<double> desired_accel_.insert()
-// std::vector<double>  q;
+std::vector<double> q;
 std::vector<double> dq;
-std::vector<double>  ddq;
-// q.resize(5);q={10*M_PI/180,20*M_PI/180,30*M_PI/180,40*M_PI/180,50*M_PI/180};
-// dq.resize(5);dq={1,2,3,4,5};
-// ddq.resize(5);ddq={0.5,1,1.5,0,0};
+std::vector<double> ddq;
+q.resize(5);q={1,1,0.1,0.1,0.1};
+dq.resize(5);dq={0,0,0,0,0};
+ddq.resize(5);ddq={0,0,0,0,0};
 
+std::vector<double>  torque = ID_model.rnea(q, dq, ddq);
+// torque = ID_model.rnea(q, dq, ddq);
+// torque = ID_model.rnea(q, dq, ddq);
+// torque = ID_model.rnea(q, dq, ddq);
+// torque = ID_model.rnea(q, dq, ddq);
+// torque = ID_model.rnea(q, dq, ddq);
+// VectorXd q;
+// q.resize(5);
+// q<<1,1,1,1,1;
+// // q<<0,0,0,0,0;
 
-// std::vector<double>  torque = ID_model.rnea(q, dq, ddq);
-VectorXd q;
-q.resize(5);
-q<<1,1,1,1,1;
-// q<<0,0,0,0,0;
+// K_model.forward_kinematic(q);
+// Vector3d desiredEEPos0 = K_model.T_from_base.at(1).block<3, 1>(0, 3);
+// Vector3d desiredEEPos1 = K_model.T_from_base.at(2).block<3, 1>(0, 3);
 
-K_model.forward_kinematic(q);
-Vector3d desiredEEPos0 = K_model.T_from_base.at(1).block<3, 1>(0, 3);
-Vector3d desiredEEPos1 = K_model.T_from_base.at(2).block<3, 1>(0, 3);
-
-Vector3d desiredEEPos2 = K_model.T_from_base.at(4).block<3, 1>(0, 3);
-Vector3d desiredEEPos3 = K_model.T_from_base.at(5).block<3, 1>(0, 3);
+// Vector3d desiredEEPos2 = K_model.T_from_base.at(4).block<3, 1>(0, 3);
+// Vector3d desiredEEPos3 = K_model.T_from_base.at(5).block<3, 1>(0, 3);
 
 // Matrix3d desiredEERotation= K_model.T_from_base.at(5).block<3, 3>(0, 0);
 
@@ -71,10 +75,11 @@ Vector3d desiredEEPos3 = K_model.T_from_base.at(5).block<3, 1>(0, 3);
 // std::cout<< desiredEEPos0<<std::endl;
 
 // std::cout<< desiredEEPos1<<std::endl;
-double a=1.0/2;
-std::cout<< desiredEEPos3<<std::endl;
-std::cout<< a<<std::endl;
-
+std::cout<< torque.at(0)<<std::endl;
+std::cout<< torque.at(1)<<std::endl;
+std::cout<< torque.at(2)<<std::endl;
+std::cout<< torque.at(3)<<std::endl;
+std::cout<< torque.at(4)<<std::endl;
 
 
 }

@@ -41,9 +41,8 @@ Manipulator_IDynamic::Manipulator_IDynamic() {
     m.resize(DOFs+1);
     double mb=0; //base mass
     m= { mb,0.245, 0.23, 0.25, 0.255 , 0.05 };
-    // m = {mb, 0.2, 1, 1, 1 ,0.5};
+    // m = {mb, 2, 2, 2, 2 ,2};
 
-    tau.resize(DOFs+1);//
     //inertias
     inertia.resize(DOFs+1);
     inertia.at(1) << 9.36e-5, 6.39e-8, 9.1e-8,
@@ -62,21 +61,21 @@ Manipulator_IDynamic::Manipulator_IDynamic() {
         -1.71e-12, 1.65e-5, 5.15e-7,
         1.57e-13, 5.15e-7, 3.59e-5;
 
-    //  inertia.at(1) << 1,0,0,
-    //     0,0.3,0,
-    //     0,0,1;
-    // inertia.at(2) << 1,0,0,
-    //     0,1,0,
-    //     0,0,1;
-    // inertia.at(3) << 1,0,0,
-    //     0,1,0,
-    //     0,0,1;
-    // inertia.at(4) << 1,0,0,
-    //     0,1,0,
-    //     0,0,1;
-    // inertia.at(5) << 1,0,0,
-    //     0,1,0,
-    //     0,0,1;
+    // inertia.at(1) << 2,0,0,
+    //     0,2,0,
+    //     0,0,2;
+    // inertia.at(2) << 2,0,0,
+    //     0,2,0,
+    //     0,0,2;
+    // inertia.at(3) << 2,0,0,
+    //     0,2,0,
+    //     0,0,2;
+    // inertia.at(4) << 2,0,0,
+    //     0,2,0,
+    //     0,0,2;
+    // inertia.at(5) << 2,0,0,
+    //     0,2,0,
+    //     0,0,2;
     
     //cogs expressed wrt the next frame so ready to use in the formulas without transformation
     com.resize(DOFs+1);
@@ -118,7 +117,7 @@ void  Manipulator_IDynamic::initializeMatrices() {
     n.at(DOFs+1).setZero();
     R.at(DOFs+1).setIdentity(3,3); //末端坐标系转化到第5个坐标系，默认为单位矩阵
     P.at(DOFs+1).setZero(); //link5到末端的位置，默认为0，若末端没有力，这个不影响
-
+    tau.resize(DOFs+1);//
 }
 
 std::vector<double> Manipulator_IDynamic::rnea(std::vector<double> q, std::vector<double> dq, std::vector<double> ddq) {
@@ -157,7 +156,7 @@ std::vector<double> Manipulator_IDynamic::rnea(std::vector<double> q, std::vecto
     // force and torque exerted on link 1 by base
     Vector3d force1;
     Vector3d tau1;
-    tau.erase(tau.begin());
+    tau.erase(tau.begin());//remeber this value must be initialized first, or it will be reduced one by one!!
     return  tau;
 }
 
