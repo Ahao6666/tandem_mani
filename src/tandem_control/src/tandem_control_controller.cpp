@@ -64,6 +64,8 @@ private:
 Joint::Joint(ros::NodeHandle nh, std::string joint_name, double dt) {
 	// initialize parameters
 	this -> joint_name = joint_name;
+	std::string joint_name_new = "ti5_arm::" + joint_name;
+	std::cout<< joint_name_new << std::endl;
 	pos_cmd = 0.0;
 	vel_cmd = 0.0;
 	ros::Duration duration(dt);
@@ -84,9 +86,9 @@ Joint::Joint(ros::NodeHandle nh, std::string joint_name, double dt) {
 	kpkv_server = nh.advertiseService(joint_name + "_kpkv_service", &Joint::kpkvCallback, this);
 
 	// set up get_joint_state_srv_msg
-	get_joint_state_srv_msg.request.joint_name = joint_name;
+	get_joint_state_srv_msg.request.joint_name = joint_name_new;
 	// set up effort_cmd_srv_msg
-	effort_cmd_srv_msg.request.joint_name = joint_name;
+	effort_cmd_srv_msg.request.joint_name = joint_name_new;
 	effort_cmd_srv_msg.request.effort = 0.0;
 	effort_cmd_srv_msg.request.duration = duration;
 	// set up joint_state_msg
@@ -175,11 +177,11 @@ int main(int argc, char **argv) {
 	double dt = 0.01; // sample time for the controller
 
 	// instantiate 4 joint instance
-	Joint joint1(nh, "joint1", dt);
-	Joint joint2(nh, "joint2", dt);
-	Joint joint3(nh, "joint3", dt);
-	Joint joint4(nh, "joint4", dt);
-	Joint joint5(nh, "joint5", dt);
+	Joint joint1(nh, "A", dt);
+	Joint joint2(nh, "B", dt);
+	Joint joint3(nh, "C", dt);
+	Joint joint4(nh, "D", dt);
+	Joint joint5(nh, "E", dt);
 
 	joint1.kpkvSetting(50, 10);
 	joint2.kpkvSetting(50, 10);

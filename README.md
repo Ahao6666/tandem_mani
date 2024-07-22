@@ -15,3 +15,24 @@ or you can run `.start.sh` or `roslaunch start.launch` directly
 
 # note: 
   1. need to **modify the relative path to absolute path** in sdf file
+  
+  
+# 20240718
+
+  ## start PX4
+ - `roslaunch px4 posix_sitl_arm.launch ` 
+ 
+  ## start QGC
+ - `QGC` 
+ 
+  ## srart tandem_control
+ - `cd ~/tandem_mani`
+ - `source devel/setup.bash`
+ - `roslaunch start.launch`
+
+  ## takeoff UAV
+ - `source devel/setup.bash`
+ - `roslaunch robot_connection.launch`
+ - new terminal
+ - `source devel/setup.bash`
+ - `rosrun qt_joystick qt_joystick`
